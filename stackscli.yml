@@ -29,3 +29,4 @@ init:
         --no-interactive
         --skipGit
       desc: Create "stacks-nx" Workspace
+      applyProperties: true
