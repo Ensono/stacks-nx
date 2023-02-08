@@ -11,5 +11,21 @@ init:
   operations:
     - action: cmd
       cmd: npx
-      args: --yes @ensono-stacks/create-stacks-workspace@latest {{ .Project.Name }} --preset={{ .Project.Framework.Option }} --business.company={{ .Input.Business.Company }} --business.domain={{ .Input.Business.Domain }} --business.component={{ .Input.Business.Component }} --cloud.platform={{ .Input.Cloud.Platform }} --cloud.region={{ .Project.Cloud.Region }} --cloud.group={{ .Project.Cloud.ResourceGroup }} --pipeline={{ .Input.Pipeline }} --terraform.group={{ .Input.Terraform.Backend.Group }} --terraform.storage={{ .Input.Terraform.Backend.Storage }} --terraform.container={{ .Input.Terraform.Backend.Container }} --vcs.type={{ .Project.SourceControl.Type }} --vcs.url={{ .Project.SourceControl.URL }}
+      args: --yes
+        @ensono-stacks/create-stacks-workspace@latest {{ .Project.Name }}
+        --preset={{ .Project.Framework.Option }}
+        --business.company={{ .Input.Business.Company }}
+        --business.domain={{ .Input.Business.Domain }}
+        --business.component={{ .Input.Business.Component }}
+        --cloud.platform={{ .Input.Cloud.Platform }}
+        --cloud.region={{ .Project.Cloud.Region }}
+        --cloud.group={{ .Project.Cloud.ResourceGroup }}
+        --pipeline={{ .Input.Pipeline }}
+        --terraform.group={{ .Input.Terraform.Backend.Group }}
+        --terraform.storage={{ .Input.Terraform.Backend.Storage }}
+        --terraform.container={{ .Input.Terraform.Backend.Container }}
+        --vcs.type={{ .Project.SourceControl.Type }}
+        --vcs.url={{ .Project.SourceControl.URL }}
+        --no-interactive
+        --skipGit
       desc: Create "stacks-nx" Workspace
