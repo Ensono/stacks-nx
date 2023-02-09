@@ -13,6 +13,7 @@ init:
       cmd: npx
       args: --yes
         @ensono-stacks/create-stacks-workspace@latest {{ .Project.Name }}
+        --dir={{ .Project.Directory.WorkingDirectory }}
         --preset={{ .Project.Framework.Option }}
         --business.company={{ .Input.Business.Company }}
         --business.domain={{ .Input.Business.Domain }}
@@ -26,7 +27,9 @@ init:
         --terraform.container={{ .Input.Terraform.Backend.Container }}
         --vcs.type={{ .Project.SourceControl.Type }}
         --vcs.url={{ .Project.SourceControl.URL }}
-        --no-interactive
+        --overwrite
         --skipGit
+        --no-nxCloud
+        --no-interactive
       desc: Create "stacks-nx" Workspace
       applyProperties: true
