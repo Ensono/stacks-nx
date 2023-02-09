@@ -13,7 +13,7 @@ init:
       cmd: npx
       args: --yes
         @ensono-stacks/create-stacks-workspace@latest {{ .Project.Name }}
-        --dir={{ .Project.Directory.WorkingDirectory }}
+        --dir={{ .Project.Directory.WorkingDir }}
         --preset={{ .Project.Framework.Option }}
         --business.company={{ .Input.Business.Company }}
         --business.domain={{ .Input.Business.Domain }}
