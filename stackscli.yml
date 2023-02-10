@@ -14,6 +14,7 @@ init:
       args: --yes
         @ensono-stacks/create-stacks-workspace@latest {{ .Project.Name }}
         --dir={{ .Project.Directory.WorkingDir }}
+        --nxVersion={{ .Project.Framework.Version }}
         --preset={{ .Project.Framework.Option }}
         --business.company={{ .Input.Business.Company }}
         --business.domain={{ .Input.Business.Domain }}
