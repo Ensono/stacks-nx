@@ -22,6 +22,8 @@ init:
         --cloud.platform={{ .Input.Cloud.Platform }}
         --cloud.region={{ .Project.Cloud.Region }}
         --cloud.group={{ .Project.Cloud.ResourceGroup }}
+        --domain.internal={{ .Input.Network.Domain.Internal }}
+        --domain.external={{ .Input.Network.Domain.External }}
         --pipeline={{ .Input.Pipeline }}
         --terraform.group={{ .Input.Terraform.Backend.Group }}
         --terraform.storage={{ .Input.Terraform.Backend.Storage }}
