@@ -13,6 +13,7 @@ init:
       cmd: npx
       args: --yes
         @ensono-stacks/create-stacks-workspace@latest {{ .Project.Name }}
+        --appName={{ .Project.Name }}
         --dir={{ .Project.Directory.WorkingDir }}
         --nxVersion={{ .Project.Framework.Version }}
         --preset={{ .Project.Framework.Option }}
@@ -31,8 +32,19 @@ init:
         --vcs.type={{ .Project.SourceControl.Type }}
         --vcs.url={{ .Project.SourceControl.URL }}
         --overwrite
-        --skipGit
         --no-nxCloud
         --no-interactive
       desc: Create "stacks-nx" Workspace
       applyProperties: true
+
+setup:
+  operations:
+    - action: cmd
+      cmd: npx
+      args: nx g @ensono-stacks/next:init-deployment
+        --project={{ .Project.Name }}
+        --openTelemetry=false
+      desc: Create application deployment files
+      applyProperties: true
+      tags: 
+      - next
