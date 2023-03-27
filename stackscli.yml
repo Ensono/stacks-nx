@@ -37,6 +37,8 @@ init:
       desc: Create "stacks-nx" Workspace
       applyProperties: true
 
+# The setup stage is run after the init stage
+# in the project working directory
 setup:
   operations:
     - action: cmd
