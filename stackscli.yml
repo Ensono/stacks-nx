@@ -6,6 +6,22 @@ framework:
     - name: node
       version: ">= 18.13"
 
+# Pipeline files
+pipeline:
+  # Pipeline files for ADO
+  - type: azdo
+    files:
+      - name: build
+        path: build/azDevOps/azure/deploy-infrastructure.yml
+      - name: variable
+        path: build/azDevOps/azure/pipeline-vars.yml
+    templates:
+      - name: variable
+        path: build/azDevOps/azure/pipeline-vars.template.yml
+    replacements:
+      - pattern: ^.*stacks-credentials-nonprod-kv$
+        value: ""
+
 # The init stage are things that are required to run before the template is run
 init:
   operations:
