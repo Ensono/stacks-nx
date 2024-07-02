@@ -1,0 +1,46 @@
+default:
+  variables:
+    - name: CLOUD_PLATFORM
+      description: Cloud that is being targeted, e.g. aws or azure
+  credentials:
+    azure:
+      - name: ARM_CLIENT_ID
+      - name: ARM_CLIENT_SECRET
+      - name: ARM_SUBSCRIPTION_ID
+      - name: ARM_TENANT_ID
+    aws:
+      - name: AWS_ACCESS_KEY_ID
+      - name: AWS_SECRET_ACCESS_KEY
+      - name: AWS_REGION
+
+stages:
+  - name: stacks-nx-infra
+    variables:
+      - name: TF_FILE_LOCATION
+        description: Path to the Terraform template files
+      - name: TF_BACKEND_INIT
+        description: Arguments that should be passed to Terraform during the init process
+      - name: TF_BACKEND_PLAN
+        description: Arguments that should be passed to Terraform during the plan process
+        required: false
+      - name: $TF_VAR_custom_name # Use this if you wish for the Cloudposse Terraform Null Label resource to overwrite the claranet naming convention
+        required: false
+      - name: $TF_VAR_name_company
+      - name: $TF_VAR_name_project
+      - name: $TF_VAR_name_environment
+      - name: $TF_VAR_name_domain
+      - name: $TF_VAR_create_redis # Set to "true" if you want a Redis Instance and "false" if you do not.
+        required: false
+      - name: $TF_VAR_redis_resource_group_name
+        required: false
+      - name: $TF_VAR_location
+        required: false
+      - name: $TF_VAR_maxmemory_policy
+        required: false
+      - name: $TF_VAR_sku_name
+        required: false
+      - name: $TF_VAR_dns_zone
+      - name: $TF_VAR_dns_zone_rg
+      - name: $TF_VAR_dns_a_record_name
+      - name: $TF_VAR_app_gateway_frontend_ip_name
+      - name: $TF_VAR_app_gateway_frontend_ip_rg
