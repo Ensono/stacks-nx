@@ -1,0 +1,103 @@
+variables:
+  # ------- General Agent Setup
+  # set the location that the resources should be deployed to
+  - name: region
+    value: westeurope
+
+  # ------- Stacks configuration
+  # name of the company that owns the project
+  - name: company
+    value: company
+
+  # name of the project
+  - name: project
+    value: frontend
+
+  # which domain fo the company is this. e.g. core resources, or front end
+  # This is not a network domain
+  - name: domain
+    value: frontend
+
+  # the email address to use when creating the SSL certificate
+  - name: acme_email
+    value: stacks@ensono.com
+
+  - name: provider
+    value: azure
+
+  # -------- Terraform remote state
+  # Stacks operates Terraform states based on workspaces **IT IS VERY IMPORTANT** that you ensure a unique name for each application definition
+  # Furthermore **IT IS VERY IMPORTANT** that you change the name of a workspace for each deployment stage
+  # there are some best practices around this if you are going for feature based environments
+  # avoid running anything past dev that is not on master
+  - name: tf_state_rg
+    value: yourstaterg
+  - name: tf_state_storage
+    value: yourstatestorage
+  - name: tf_state_container
+    value: tfstate
+  - name: tf_state_key
+    value: yourtfstatekey
+
+  # -------- Custom Name Label
+  - name: custom_name
+    value: true
+
+  # ------- DNS & Public IP References
+  - name: dns_zone_rg
+    value: dnz_zone
+  - name: dns_zone
+    value: yourdomain.com
+  - name: dns_a_record_name
+    value: yourrecordname
+
+  - name: app_gateway_frontend_ip_rg
+    value: youriprg
+  - name: app_gateway_frontend_ip_name
+    value: youripname
+
+  # ------- Redis Cache Configuration (See claranet documentation for full customization options and terraform.io for further context)
+  - name: create_redis
+    value: true
+  - name: redis_resource_group_name
+    value: redisrgname
+  - name: maxmemory_policy
+    value: allkeys-lru
+  - name: sku_name
+    value: Basic
+
+  # ------- Build
+  - name: image_name
+    value: nx-app
+  - name: registry_fqdn
+    value: yourcontainerregistry.azurecr.io
+  - name: registry_resource_group
+    value: registryrg
+  - name: app_directory
+    value: ./apps/stacks-app/Dockerfile
+  - name: app_workspace
+    value: nx-workspace
+  - name: image_tag
+    value: latest
+
+  # ------- Deploy
+  - name: aks_cluster
+    value: yourakscluster
+  - name: aks_resource_group
+    value: youraksrg
+
+  # ------- GitHub
+  - name: VERSION_NUMBER
+    value: $(Build.BuildNumber)
+  - name: COMMIT_ID
+    value: $(Build.SourceVersion)
+  - name: OWNER
+    value: ensono
+  - name: REPOSITORY
+    value: stacks-nx-plugins
+  - name: ARTIFACTS_DIR
+    value: artifacts/
+
+  # ------- Resource Tags
+  - name: team_owner
+    value: plateng

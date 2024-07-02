@@ -1,0 +1,35 @@
+name: stacks-nx-plugins
+title: Stacks NX Plugins
+maintainer: Ensono Digital
+copyright: Ensono Digital
+copyright_email: stacks@ensono.com
+license: Apache-2.0
+summary: |
+  A profile to test that the infrastructure for NX Plugins have been setup as expected
+version: 0.1.0
+inspec_version: ">= 2.2.7"
+depends:
+  - name: inspec-azure
+    url: https://github.com/inspec/inspec-azure/archive/main.tar.gz
+supports:
+  - platform: azure
+
+inputs:
+  - name: resource_group_name
+    description: Group containing all the resources for the Redis Cache
+  - name: resource_group_location
+    description: Location of the resource group
+  - name: redis_name
+    description: Name of the Redis Cache instance
+  - name: redis_port
+    description: Port number on which Redis is running
+  - name: redis_ssl_port
+    description: SSL port number on which Redis is running
+  - name: redis_sku_name
+    description: SKU name of the Redis Cache instance (e.g., Basic, Standard, Premium)
+  - name: redis_family
+    description: Family of the Redis Cache instance (e.g., C, P)
+  - name: redis_capacity
+    description: Capacity of the Redis Cache instance (e.g., 1, 2, 3)
+  - name: redis_configuration
+    description: Configuration settings for the Redis Cache instance

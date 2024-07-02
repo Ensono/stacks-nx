@@ -1,0 +1,99 @@
+variables:
+  # ------- General Agent Setup
+  # set the location that the resources should be deployed to
+  - name: region
+    value: { { .Project.Cloud.Region } }
+
+  # ------- Stacks configuration
+  # name of the company that owns the project
+  - name: company
+    value: { { .Input.Business.Company } }
+
+  # name of the project
+  - name: project
+    value: { { .Project.Name } }
+
+  # which domain fo the company is this. e.g. core resources, or front end
+  # This is not a network domain
+  - name: domain
+    value: { { .Input.Business.Domain } }
+
+  # the email address to use when creating the SSL certificate
+  - name: acme_email
+    value:
+
+  - name: provider
+    value: azure
+
+  # -------- Terraform remote state
+  # Stacks operates Terraform states based on workspaces **IT IS VERY IMPORTANT** that you ensure a unique name for each application definition
+  # Furthermore **IT IS VERY IMPORTANT** that you change the name of a workspace for each deployment stage
+  # there are some best practices around this if you are going for feature based environments
+  # avoid running anything past dev that is not on master
+  - name: tf_state_rg
+    value: { { .Input.Terraform.Backend.Group } }
+  - name: tf_state_storage
+    value: { { .Input.Terraform.Backend.Storage } }
+  - name: tf_state_container
+    value: { { .Input.Terraform.Backend.Container } }
+  - name: tf_state_key
+    value: core
+
+  # -------- Custom Name Label
+  - name: custom_name
+    value: true
+
+  # ------- DNS & Public IP References
+  - name: dns_zone_rg
+    value:
+  - name: dns_zone
+    value:
+  - name: dns_a_record_name
+    value:
+
+  - name: app_gateway_frontend_ip_rg
+    value:
+  - name: app_gateway_frontend_ip_name
+    value:
+
+  # ------- Redis Cache Configuration (See claranet documentation for full customization options and terraform.io for further context)
+  - name: create_redis
+    value: true
+  - name: redis_resource_group_name
+    value:
+  - name: maxmemory_policy
+    value:
+  - name: sku_name
+    value:
+
+  # ------- Build
+  - name: image_name
+    value:
+  - name: registry_fqdn
+    value:
+  - name: registry_resource_group
+    value:
+  - name: app_directory
+    value: ./apps/stacks-app/Dockerfile
+  - name: app_workspace
+    value: nx-workspace
+  - name: image_tag
+    value:
+
+  # ------- Deploy
+  - name: aks_cluster
+    value:
+  - name: aks_resource_group
+    value:
+
+  # ------- GitHub
+  - name: create_release
+    value: false
+  - name: github_release_service_connection
+    value:
+  - name: github_org
+    value: $(company)
+
+  # ------- Resource Tags
+  - name: team_owner
+    value: plateng
