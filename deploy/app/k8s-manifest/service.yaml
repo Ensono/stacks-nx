@@ -9,6 +9,6 @@ spec:
     app: nx-app
   ports:
     - protocol: TCP
-      port: 80 # The port that the service will expose
+      port: 80         # The port that the service will expose
       targetPort: 3000 # The port on the container
-  type: ClusterIP # Internal access within the cluster (can also use LoadBalancer or NodePort)
+  type: ClusterIP      # Internal access within the cluster (can also use LoadBalancer or NodePort)
