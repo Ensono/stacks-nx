@@ -51,3 +51,5 @@ setup:
         --useDev
       desc: Create "stacks-nx" Workspace
       applyProperties: true
+
+    - action: copy
