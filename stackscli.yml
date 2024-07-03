@@ -22,7 +22,7 @@ pipeline:
       - pattern: ^.*stacks-credentials-nonprod-kv$
         value: ""
 
-init:
+setup:
   operations:
     - action: cmd
       cmd: npx
