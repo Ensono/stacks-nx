@@ -1,0 +1,78 @@
+---
+id: nx-plugins_testing_locally
+title: Testing Infrastructure Locally
+description: To keep the resources in a known configuration, e.g. Azure Cache for Redis, up to date the project contains infrastructure tests. 
+weight: 70
+---
+
+== How to Locally Test via Inspec
+
+Ensure that your taskctl envfile OR environment variables contain the following values:
+* `resource_group_name`
+  - Description: Group containing all the resources for the Redis Cache
+
+* `region`
+  - Description: Region that the resources are expected to be deployed into
+
+* `redis_name`
+  - Description: Name of the Redis Cache instance
+
+* `redis_port`
+  - Description: Port number on which Redis is running
+
+* `redis_ssl_port`
+  - Description: SSL port number on which Redis is running
+
+* `redis_sku_name`
+  - Description: SKU name of the Redis Cache instance (e.g., Basic, Standard, Premium)
+
+* `redis_family`
+  - Description: Family of the Redis Cache instance (e.g., C, P)
+
+* `redis_capacity`
+  - Description: Capacity of the Redis Cache instance (e.g., 1, 2, 3)
+
+* `redis_configuration`
+  - Description: Configuration settings for the Redis Cache instance
+
+
+=== How to Run
+
+* Via your own envfile (*_envfile can be anything you wish to call it upon creation but must be in your root directory!_*):
+```
+taskctl tests envfile
+```
+
+* Via your environment variables, loaded into your current terminal session:
+```
+$env:CHEF_LICENCE = "accept"
+$env:TEST_PATH = "./path/to/tests"
+taskctl tests
+```
+
+=== Things to check
+
+* Your tests are located in the `~/deploy/tests/controls` directory and your `inspec.yml` has the correct inputs, for example:
+```yaml
+# Define the inputs for the control
+inputs:
+  - name: resource_group_name
+    description: Group containing all the resources for the Redis Cache
+  - name: region
+    description: Region that the resources are expected to be deployed into
+  - name: redis_name
+    description: Name of the Redis Cache instance
+  - name: redis_port
+    description: Port number on which Redis is running
+  - name: redis_ssl_port
+    description: SSL port number on which Redis is running
+  - name: redis_sku_name
+    description: SKU name of the Redis Cache instance (e.g., Basic, Standard, Premium)
+  - name: redis_family
+    description: Family of the Redis Cache instance (e.g., C, P)
+  - name: redis_capacity
+    description: Capacity of the Redis Cache instance (e.g., 1, 2, 3)
+  - name: redis_configuration
+    description: Configuration settings for the Redis Cache instance
+```
+* Your infrastructure has been deployed, as Inspec is testing against LIVE Infrastructure via Inspec Train & the Azure REST API - Read more here: https://github.com/inspec/inspec-azure!
