@@ -28,7 +28,7 @@ setup:
       cmd: npx
       args: --yes
         @ensono-stacks/create-stacks-workspace@latest {{ .Project.Name }}
-        --dir={{ .Project.Directory.WorkingDir }}
+        --dir={{ .Input.Directory.WorkingDir }}
         --nxVersion={{ .Project.Framework.Version }}
         --preset={{ .Project.Framework.Option }}
         --business.company={{ .Input.Business.Company }}
