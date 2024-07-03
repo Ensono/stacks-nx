@@ -51,5 +51,3 @@ setup:
         --no-interactive
       desc: Create "stacks-nx" Workspace
       applyProperties: true
-
-    - action: copy
