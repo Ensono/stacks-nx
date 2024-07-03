@@ -1,7 +1,7 @@
 ---
-id: nx-plugins_infrastructure
+id: NX_infrastructure
 title: Infrastructure
-description: Details about how the architecture of the nx-plugins resources
+description: Details about how the architecture of the NX resources
 weight: 30
 ---
 

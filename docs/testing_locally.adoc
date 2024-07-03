@@ -1,5 +1,5 @@
 ---
-id: nx-plugins_testing_locally
+id: NX_testing_locally
 title: Testing Infrastructure Locally
 description: To keep the resources in a known configuration, e.g. Azure Cache for Redis, up to date the project contains infrastructure tests. 
 weight: 70

@@ -9,7 +9,7 @@
 
 :company: Ensono
 
-= Ensono Stacks - Stacks NX-Plugins
+= Ensono Stacks - Stacks NX
 
 include::_index.adoc[]
 

@@ -1,4 +1,11 @@
-# stacks-nx
-Nx Monorepo Scaffolding for the Ensono Stacks CLI.
-
-This repo contains the instructions for the Stacks CLI to scaffold the Stacks frontend.
+# Ensono Stacks with Nx
+The Stacks NX Plugins Infra Project extends the foundational principles of the Stacks philosophy, focusing
+on streamlined deployment processes for Redis instances and facilitating access to AKS clusters through
+environment variables containing connection strings. This initiative serves as an alternative solution for
+developers seeking efficient management and deployment of their application stack within Azure
+Kubernetes Service (AKS), without necessitating the comprehensive knowledge typically associated with
+AKS deployment.
+At its current stage, the project exhibits a foundational structure, but with subsequent iterations, it aims to
+evolve into an integral component of the Stacks-CLI ecosystem. Through ongoing development, the Stacks
+NX Plugins Infra Project will emerge as a versatile and user-friendly option within the Stacks-CLI framework,
+empowering developers to seamlessly build, deploy, and manage their applications on AKS clusters.

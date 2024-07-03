@@ -14,7 +14,7 @@ If you encounter any errors that don't seem to have an obvious resolution it is 
 
 === *Trying to create a workspace in a folder under source control*
 
-When creating a new stacks workspace, it needs to be created in a folder that isn't under source control by Git. If you try to create a workspace in a folder that is already a git repo you will see the following Nx warning during the creation process:
+When creating a new stacks workspace, it needs to be created in a folder that isn't under source control by Git. If you try to create a workspace in a folder that is already a git repo you will see the following NX warning during the creation process:
 
 `Directory is already under version control. Skipping initialization of git.`
 
@@ -33,9 +33,9 @@ To avoid this issue you need to make sure the folder where the stacks workspace 
 
 === *Existing node_modules in parent folder*
 
-Having a `node_modules` folder in a parent folder of the stacks-nx-plugins project can sometimes cause issues, especially when trying to run the unit tests. You may sometimes get an error like the following:
+Having a `node_modules` folder in a parent folder of the stacks-NX project can sometimes cause issues, especially when trying to run the unit tests. You may sometimes get an error like the following:
 
-`Cannot find module '@nx/next' from '../../../node_modules/@ensono-stacks/test/src/lib/create-next-app.js'`
+`Cannot find module '@NX/next' from '../../../node_modules/@ensono-stacks/test/src/lib/create-next-app.js'`
 
 This is just an example, and occurs when trying to run the unit tests for the next plugin. If you look in the folder path above you can see the `node_modules` folder is outside of the `@ensono-stacks` folder.
 

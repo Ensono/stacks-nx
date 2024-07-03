@@ -1,5 +1,5 @@
 ---
-id: nx-plugins_ado_features
+id: NX_ado_features
 title: Azure DevOps Features
 description: Details about how the Azure DevOps feature switches operate
 weight: 40
