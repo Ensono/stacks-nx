@@ -1,5 +1,5 @@
 ---
-id: nx-plugins_tests
+id: NX_tests
 title: Tests
 description: To keep the resources in a known configuration, e.g. Azure Cache for Redis, up to date the project contains infrastructure tests. 
 weight: 70

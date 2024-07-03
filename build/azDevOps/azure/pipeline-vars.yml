@@ -94,7 +94,7 @@ variables:
   - name: OWNER
     value: ensono
   - name: REPOSITORY
-    value: stacks-nx-plugins
+    value: stacks-nx
   - name: ARTIFACTS_DIR
     value: artifacts/
 

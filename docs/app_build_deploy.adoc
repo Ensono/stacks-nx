@@ -1,5 +1,5 @@
 ---
-id: nx-plugins_app_build_deploy
+id: NX_app_build_deploy
 title: Application Build & Deploy
 description: Details about the application image build and deploy to AKS Cluster
 weight: 40
@@ -20,7 +20,7 @@ From your calling pipeline or within your terminal a variable set as `$app_works
 
 ```
 - name: app_workspace
-  value: nx-workspace
+  value: NX-workspace
 - name: app_directory
   value: ./apps/stacks-app/Dockerfile
 ```
