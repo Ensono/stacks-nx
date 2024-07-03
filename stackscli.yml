@@ -47,7 +47,6 @@ setup:
         --vcs.url={{ .Project.SourceControl.URL }}
         --overwrite
         --skipGit
-        --no-nxCloud
         --no-interactive
       desc: Create "stacks-nx" Workspace
       applyProperties: true
