@@ -22,8 +22,7 @@ pipeline:
       - pattern: ^.*stacks-credentials-nonprod-kv$
         value: ""
 
-# The init stage are things that are required to run before the template is run
-init:
+setup:
   operations:
     - action: cmd
       cmd: npx
@@ -52,3 +51,5 @@ init:
         --no-interactive
       desc: Create "stacks-nx" Workspace
       applyProperties: true
+
+    - action: copy
