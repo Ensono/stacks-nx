@@ -112,13 +112,13 @@ tasks:
     context: powershell
     description: Create a shell script to configure the environment variables
     command:
-      - New-EnvConfig -Path /app/build/config/stage_envvars.yml -ScriptPath /app/local
+      - New-EnvConfig -Path /app/build/common/config/stage_envvars.yml -ScriptPath /app/local
 
   setup:environment:
     context: powershell
     description: Ensure that the environment is configured correctly
     command:
-      - Confirm-Environment -Path /app/build/config/stage_envvars.yml
+      - Confirm-Environment -Path /app/build/common/config/stage_envvars.yml
 
   tests:infra:init:
     context: infratests
