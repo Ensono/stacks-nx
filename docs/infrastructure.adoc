@@ -209,7 +209,7 @@ The following code snippet shows how the outputs from Terraform can be turned in
 [source,powershell,linenums]
 ----
 # This command is run from the root of the repository
-Invoke-Terraform -Output -Path deploy/terraform | `
+Invoke-Terraform -Output -Path deploy/azure/terraform | `
     Set-EnvironmentVars -prefix "TFOUT" -key "value" -passthru | `
     ConvertTo-Yaml | `
     Out-File -Path inspec_inputs.yml
