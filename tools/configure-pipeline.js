@@ -36,14 +36,14 @@ function clone(...fragments) {
       force: true,
       recursive: true,
     });
-  } else if (fragments[fragments.length - 1] !== "common") {
+  } else if (key !== "common") {
     console.warn(`Unable to locate path "${target}"`);
   }
 }
 
-function cloneDeploymentFolder(...fragments) {
-  clone(...fragments);
-  clone(...fragments, "common");
+function cloneDeploymentFolder(dir, key) {
+  clone(dir, key);
+  clone(dir, "common");
 }
 
 cloneDeploymentFolder("build", pipelineMap[pipeline]);
