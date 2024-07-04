@@ -27,20 +27,20 @@ Object.keys(argOptions).forEach((key) => {
 
 const { tmpDir, targetDir, pipeline, platform } = values;
 
-function cloneFolderByKey(path, key) {
-  const target = path.join(tmpDir, path, key);
-  const destination = path.join(targetDir, path, key);
+function cloneFolderByKey(dir, key) {
+  const target = path.join(tmpDir, dir, key);
+  const destination = path.join(targetDir, dir, key);
 
   if (fs.existsSync(target)) {
     fs.cpSync(target, destination, { force: true, recursive: true });
   } else if (key !== "common") {
-    console.warn(`Unable to locate path "${path}" with key "${key}"`);
+    console.warn(`Unable to locate path "${dir}" with key "${key}"`);
   }
 }
 
-function cloneDeploymentFolder(path, key) {
-  cloneFolderByKey(path, key);
-  cloneFolderByKey(path, "common");
+function cloneDeploymentFolder(dir, key) {
+  cloneFolderByKey(dir, key);
+  cloneFolderByKey(dir, "common");
 }
 
 cloneDeploymentFolder("build", pipelineMap[pipeline]);
