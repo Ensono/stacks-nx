@@ -52,7 +52,7 @@ inspec.lock
 deploy/app/k8s-manifest/testing 
 deploy/deploytesting/*
 tf_outputs.yml
-deploy/tests/vendor
+deploy/azure/tests/vendor
 inspec.lock
 inspec_inputs.yml
 nx-workspace

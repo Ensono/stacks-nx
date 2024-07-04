@@ -9,7 +9,7 @@ weight: 70
 
 Infrastructure tests have been built into the EDIR pipeline. These tests are designed to check that the deployed resources are configured as expected.
 
-The tests are located in `deploy/tests` and are https://inspec.io[Inspec] controls. The following table shows the tests that are being performed.
+The tests are located in `deploy/azure/tests` and are https://inspec.io[Inspec] controls. The following table shows the tests that are being performed.
 
 .InSpec Controls
 [cols="1,3a",options="header",stripes=even]

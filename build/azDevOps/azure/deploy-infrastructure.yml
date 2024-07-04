@@ -154,7 +154,7 @@ stages:
                         script: |
                           taskctl infra:vars
                       env:
-                        TF_FILE_LOCATION: /app/deploy/terraform
+                        TF_FILE_LOCATION: /app/deploy/azure/terraform
 
                         ##### LABEL
                         TF_VAR_custom_name: $(custom_name) # Use this if you wish for the Cloudposse Terraform Null Label resource to overwrite the claranet naming convention
@@ -191,7 +191,7 @@ stages:
                             script: |
                               taskctl infrastructure_destroy
                           env:
-                            TF_FILE_LOCATION: /app/deploy/terraform
+                            TF_FILE_LOCATION: /app/deploy/azure/terraform
                             TF_BACKEND_INIT: "key=$(tf_state_key),container_name=$(tf_state_container),storage_account_name=$(tf_state_storage),resource_group_name=$(tf_state_rg)"
                             TF_BACKEND_DESTROY_PLAN: '-input=false,-out="destroy"'
                             TF_VAR_name_environment: ${{ stage.environment_shortname }}
@@ -205,7 +205,7 @@ stages:
                             script: |
                               taskctl infrastructure
                           env:
-                            TF_FILE_LOCATION: /app/deploy/terraform
+                            TF_FILE_LOCATION: /app/deploy/azure/terraform
                             TF_BACKEND_INIT: "key=$(tf_state_key),container_name=$(tf_state_container),storage_account_name=$(tf_state_storage),resource_group_name=$(tf_state_rg)"
                             TF_BACKEND_PLAN: '-input=false,-out="tfplan"'
                             TF_VAR_name_environment: ${{ stage.environment_shortname }}
@@ -215,8 +215,8 @@ stages:
                         - template: templates/infra-tests.yml
                           parameters:
                             CHEF_LICENSE: $(CHEF_LICENSE)
-                            INSPEC_FILES: /app/deploy/tests
-                            TF_FILE_LOCATION: /app/deploy/terraform
+                            INSPEC_FILES: /app/deploy/azure/tests
+                            TF_FILE_LOCATION: /app/deploy/azure/terraform
                             REPORT_FILENAME: inspec_azure_redis.xml
                             TF_VAR_name_environment: ${{ stage.environment_shortname }}
                             TF_VAR_resource_group_location: $(region)
@@ -268,7 +268,7 @@ stages:
                           taskctl infra:init
                           taskctl app:deploy
                       env:
-                        TF_FILE_LOCATION: /app/deploy/terraform
+                        TF_FILE_LOCATION: /app/deploy/azure/terraform
                         TF_VAR_name_environment: ${{ stage.environment_shortname }}
                         TF_BACKEND_INIT: "key=$(tf_state_key),container_name=$(tf_state_container),storage_account_name=$(tf_state_storage),resource_group_name=$(tf_state_rg)"
                         provider: $(provider) # could be CLOUD_PLATFORM

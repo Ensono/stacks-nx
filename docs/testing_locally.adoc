@@ -52,7 +52,7 @@ taskctl tests
 
 === Things to check
 
-* Your tests are located in the `~/deploy/tests/controls` directory and your `inspec.yml` has the correct inputs, for example:
+* Your tests are located in the `~/deploy/azure/tests/controls` directory and your `inspec.yml` has the correct inputs, for example:
 ```yaml
 # Define the inputs for the control
 inputs:

@@ -3,7 +3,7 @@ steps:
     displayName: "DEBUG: Copy files to staging directory"
     inputs:
       flattenFolders: true
-      contents: $(Build.SourcesDirectory)/deploy/terraform/*.tfvars
+      contents: $(Build.SourcesDirectory)/deploy/azure/terraform/*.tfvars
       targetFolder: $(Build.ArtifactStagingDirectory)
 
   - task: PublishBuildArtifacts@1
