@@ -17,10 +17,7 @@ pipeline:
         path: build/azDevOps/azure/pipeline-vars.yml
     templates:
       - name: variable
-        path: build/azDevOps/azure/pipeline-vars.template.yml
-    replacements:
-      - pattern: ^.*stacks-credentials-nonprod-kv$
-        value: ""
+        path: build/azDevOps/azure/pipeline-vars.yml
 
 setup:
   operations:
