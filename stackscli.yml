@@ -25,6 +25,8 @@ pipeline:
 setup:
   operations:
     - action: cmd
+
+    - action: cmd
       cmd: npx
       args: --yes
         @ensono-stacks/create-stacks-workspace {{ .Project.Name }}
@@ -52,4 +54,11 @@ setup:
       desc: Create "stacks-nx" Workspace
       applyProperties: true
 
-    - action: copy
+    - action: cmd
+      cmd: node
+      args: "{{ .Project.Directory.TempDir }}/tools/configure-pipeline.js
+        --tmpDir={{ .Project.Directory.TempDir }}
+        --targetDir={{ .Project.Directory.WorkingDir }}
+        --platform={{ .Input.Cloud.Platform }}
+        --pipeline={{ .Input.Pipeline }}"
+      desc: Scaffold Pipeline
