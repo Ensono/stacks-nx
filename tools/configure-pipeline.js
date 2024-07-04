@@ -27,26 +27,26 @@ Object.keys(argOptions).forEach((key) => {
 
 const { tmpDir, targetDir, pipeline, platform } = values;
 
-function cloneFolderByKey(dir, key) {
-  const target = path.join(tmpDir, dir, key);
-  const destination = path.join(targetDir, dir, key);
+function clone(...fragments) {
+  const target = path.join(tmpDir, ...fragments);
+  const destination = path.join(targetDir, ...fragments);
 
   if (fs.existsSync(target)) {
     fs.cpSync(target, destination, {
-      filter: (source) => !source.includes(".template."),
       force: true,
       recursive: true,
     });
   } else if (key !== "common") {
-    console.warn(`Unable to locate path "${dir}" with key "${key}"`);
+    console.warn(`Unable to locate path "${target}"`);
   }
 }
 
-function cloneDeploymentFolder(dir, key) {
-  cloneFolderByKey(dir, key);
-  cloneFolderByKey(dir, "common");
+function cloneDeploymentFolder(...fragments) {
+  clone(...fragments);
+  clone(...fragments, "common");
 }
 
 cloneDeploymentFolder("build", pipelineMap[pipeline]);
 cloneDeploymentFolder("deploy", platform);
 cloneDeploymentFolder("docs", pipelineMap[pipeline]);
+clone("taskctl.yaml");
