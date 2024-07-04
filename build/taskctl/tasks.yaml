@@ -144,11 +144,11 @@ tasks:
         Invoke-Inspec -execute -ExitCodes 101 -arguments "--input-file ${PWD}/inspec_inputs.yml"
 
   _docs:
-    description: Build Docs for AKS
+    description: Build Docs for Stacks-NX
     context: docsenv
     command: |
-      /app/build/scripts/New-Glossary.ps1 -docpath /app/docs -path /app/tmp/glossary.adoc
-      Invoke-AsciiDoc -PDF -basepath /app -config /app/docs.json -debug
+      /app/build/scripts/New-Glossary.ps1 -docpath /app/docs/azDevOps/azure -path /app/tmp/glossary.adoc
+      Invoke-AsciiDoc -PDF -basepath /app -config /app/docs/docs.json -debug
 
   _release:
     context: powershell
