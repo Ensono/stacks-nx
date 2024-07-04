@@ -18,7 +18,7 @@ if ($VerboseOutput) {
   Write-Verbose "Verbose mode enabled"
 }
 
-Set-Location -Path "./deploy/app/k8s-manifest"
+Set-Location -Path "./deploy/common/app/k8s-manifest"
 Write-Verbose "Adding K8s manifests!"
 Invoke-Kubectl -apply -arguments @("deployment.yaml", "service.yaml", "ingress.yaml") -provider $env:provider -target $env:target -identifier $env:identifier
 
