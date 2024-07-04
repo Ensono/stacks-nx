@@ -35,7 +35,7 @@ tasks:
     context: powershell
     description: Create Terraform variables file
     command:
-      - /app/build/scripts/Set-TFVars.ps1 | Out-File -Path "${env:TF_FILE_LOCATION}/terraform.tfvars"
+      - /app/build/common/scripts/Set-TFVars.ps1 | Out-File -Path "${env:TF_FILE_LOCATION}/terraform.tfvars"
       - dir ${env:TF_FILE_LOCATION}
 
   infra:plan:
@@ -138,7 +138,7 @@ tasks:
     command:
       - |
         Invoke-Terraform -Workspace -Arguments $env:TF_VAR_name_environment -Path $env:TF_FILE_LOCATION
-        Invoke-Terraform -Output -Path $env:TF_FILE_LOCATION | /app/build/scripts/Set-EnvironmentVars.ps1 -prefix "TFOUT" -key "value" -passthru | ConvertTo-Yaml | Out-File -Path ${PWD}/inspec_inputs.yml
+        Invoke-Terraform -Output -Path $env:TF_FILE_LOCATION | /app/build/common/scripts/Set-EnvironmentVars.ps1 -prefix "TFOUT" -key "value" -passthru | ConvertTo-Yaml | Out-File -Path ${PWD}/inspec_inputs.yml
         Add-Content -Path ${PWD}/inspec_inputs.yml -Value "resource_group_name: ${env:TF_VAR_resource_group_name}"
         Add-Content -Path ${PWD}/inspec_inputs.yml -Value "resource_group_location: ${env:TF_VAR_resource_group_location}"
         Invoke-Inspec -execute -ExitCodes 101 -arguments "--input-file ${PWD}/inspec_inputs.yml"
@@ -147,7 +147,7 @@ tasks:
     description: Build Docs for Stacks-NX
     context: docsenv
     command: |
-      /app/build/scripts/New-Glossary.ps1 -docpath /app/docs/azDevOps/azure -path /app/tmp/glossary.adoc
+      /app/build/common/scripts/New-Glossary.ps1 -docpath /app/docs/azDevOps/azure -path /app/tmp/glossary.adoc
       Invoke-AsciiDoc -PDF -basepath /app -config /app/docs/docs.json -debug
 
   _release:

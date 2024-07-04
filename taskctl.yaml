@@ -1,6 +1,6 @@
 import:
-  - ./build/taskctl/contexts.yaml
-  - ./build/taskctl/tasks.yaml
+  - ./common/build/taskctl/contexts.yaml
+  - ./common/build/taskctl/tasks.yaml
 
 pipelines:
   lint:
