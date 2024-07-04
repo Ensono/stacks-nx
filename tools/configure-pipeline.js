@@ -32,7 +32,11 @@ function cloneFolderByKey(dir, key) {
   const destination = path.join(targetDir, dir, key);
 
   if (fs.existsSync(target)) {
-    fs.cpSync(target, destination, { force: true, recursive: true });
+    fs.cpSync(target, destination, {
+      filter: (source) => !source.includes(".template."),
+      force: true,
+      recursive: true,
+    });
   } else if (key !== "common") {
     console.warn(`Unable to locate path "${dir}" with key "${key}"`);
   }
