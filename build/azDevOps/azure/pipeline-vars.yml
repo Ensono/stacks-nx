@@ -75,8 +75,8 @@ variables:
     value:
   - name: app_directory
     value: ./apps/stacks-app/Dockerfile
-  - name: app_workspace
-    value: nx-workspace
+  # - name: app_workspace
+  #   value: nx-workspace
   - name: image_tag
     value: latest
 

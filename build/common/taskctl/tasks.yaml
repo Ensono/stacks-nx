@@ -90,6 +90,21 @@ tasks:
     command:
       - Invoke-Terraform -Output
 
+  app:lint:
+    description: Lint Application
+    command:
+    - npx nx run stacks-app --target=lint
+  
+  app:test:
+    description: Test Application
+    command:
+    - npx nx run stacks-app --target=test
+  
+  app:local:build:
+    description: Build Application Locally
+    command:
+    - npx nx run stacks-app --target=build
+
   app:build:
     context: powershell
     description: Prepare the application image to be pushed to Image Registry
