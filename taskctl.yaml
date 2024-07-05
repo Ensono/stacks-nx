@@ -39,7 +39,11 @@ pipelines:
         - infra:destroy:plan
   
   app:
+    - task: app:lint
+    - task: app:test
+      depends_on: app:lint
     - task: app:build
+      depends_on: app:test
     - task: app:deploy
       depends_on: app:build
 
