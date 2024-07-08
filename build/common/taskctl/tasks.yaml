@@ -93,17 +93,17 @@ tasks:
   app:lint:
     description: Lint Application
     command:
-    - npx nx run stacks-app --target=lint
+    - npx nx run stacks-app:lint
   
   app:test:
     description: Test Application
     command:
-    - npx nx run stacks-app --target=test
+    - npx nx run stacks-app:test
   
   app:local:build:
-    description: Build Application Locally
+    description: Locally Build Application
     command:
-    - npx nx run stacks-app --target=build
+    - npx nx run stacks-app:build
 
   app:build:
     context: powershell

@@ -163,6 +163,12 @@ stages:
                       inputs: inline
                       script: |
                         taskctl app:test
+                    
+                    - task: Bash@3
+                      displayName: Prepare Application Image for Build
+                      inputs: inline
+                      script: |
+                        taskctl app:local:build
 
                     - task: Bash@3
                       displayName: Build Application Image
