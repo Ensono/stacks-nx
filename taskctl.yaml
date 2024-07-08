@@ -42,8 +42,10 @@ pipelines:
     - task: app:lint
     - task: app:test
       depends_on: app:lint
-    - task: app:build
+    - task: app:local:build
       depends_on: app:test
+    - task: app:build
+      depends_on: app:local:build
     - task: app:deploy
       depends_on: app:build
 
