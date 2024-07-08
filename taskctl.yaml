@@ -39,7 +39,9 @@ pipelines:
         - infra:destroy:plan
   
   app:
+    - task: setup:environment
     - task: app:lint
+      depends_on: setup:environment
     - task: app:test
       depends_on: app:lint
     - task: app:local:build
