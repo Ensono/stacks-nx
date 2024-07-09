@@ -90,6 +90,11 @@ tasks:
     command:
       - Invoke-Terraform -Output
 
+  app:install:
+    description: Install NPM
+    command:
+      - npm install
+
   app:lint:
     description: Lint Application
     command:
@@ -99,7 +104,7 @@ tasks:
     description: Test Application
     command:
     - npx nx run stacks-app:test
-  
+
   app:local:build:
     description: Locally Build Application
     command:
@@ -109,9 +114,9 @@ tasks:
     context: powershell
     description: Prepare the application image to be pushed to Image Registry
     command:
-      - |
-        Set-Location $env:app_workspace
-        Build-DockerImage -provider $env:provider -name $env:image_name -registry $env:registry_name -tag $env:tag -group $env:registry_resource_group -buildargs $env:build_args -push
+      # - Build-DockerImage -provider "azure" -name "cycle14test" -registry "redistestreg.azurecr.io" -tag "test" -group "danredistest" -buildargs "-f ./apps/stacks-app/Dockerfile" -push
+      - Build-DockerImage -provider $env:provider -name $env:image_name -registry $env:registry_name -tag $env:tag -group $env:registry_resource_group -buildargs $env:build_args -push
+
 
   app:deploy:
     context: powershell
@@ -119,9 +124,9 @@ tasks:
     command:
       - |
         Import-Module Az.Aks # This is loaded here as when it is imported in lower down modules you end up with conflicts with assembly tasks within Azure DevOps Backend!
-        ./build/scripts/Prepare-TerraformOutputs.ps1 -VerboseOutput
-        ./build/scripts/Deploy-Secret.ps1 -VerboseOutput
-        ./build/scripts/Deploy-Manifests.ps1 -VerboseOutput
+        ./build/common/scripts/Prepare-TerraformOutputs.ps1 -VerboseOutput
+        ./build/common/scripts/Deploy-Secret.ps1 -VerboseOutput
+        ./build/common/scripts/Deploy-Manifests.ps1 -VerboseOutput
 
   setup:dev:
     context: powershell
@@ -163,7 +168,7 @@ tasks:
     context: docsenv
     command: |
       /app/build/common/scripts/New-Glossary.ps1 -docpath /app/docs/azDevOps/azure -path /app/tmp/glossary.adoc
-      Invoke-AsciiDoc -PDF -basepath /app -config /app/docs/docs.json -debug
+      Invoke-AsciiDoc -PDF -basepath /app -path app/docs/azDevOps/azure -config /app/docs/common/docs.json -debug
 
   _release:
     context: powershell
