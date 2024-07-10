@@ -141,7 +141,7 @@ stages:
           - group: sp-creds
         jobs:
           - deployment: ${{ stage.build_app }}
-            condition: and(succeeded(), eq('${{ parameters.deploy }}', true))
+            condition: and(succeeded(), eq('${{ parameters.run_app_build }}', true))
             environment: ${{ variables.domain }}-${{ stage.environment_shortname }}
             pool:
               vmImage: $(pool_vm_image)
@@ -193,6 +193,7 @@ stages:
 
           - deployment: ${{ stage.deployment_infra }}
             dependsOn: ${{ stage.build_app }}
+            condition: and(succeeded(), eq('${{ parameters.deploy }}', true))
             environment: ${{ variables.domain }}-${{ stage.environment_shortname }}
             pool:
               vmImage: $(pool_vm_image)
