@@ -168,7 +168,7 @@ tasks:
     context: docsenv
     command: |
       /app/build/common/scripts/New-Glossary.ps1 -docpath /app/docs/azDevOps/azure -path /app/tmp/glossary.adoc
-      Invoke-AsciiDoc -PDF -basepath /app -path app/docs/azDevOps/azure -config /app/docs/common/docs.json -debug
+      Invoke-AsciiDoc -PDF -basepath /app -config /app/docs/common/docs.json -debug
 
   _release:
     context: powershell
