@@ -8,7 +8,7 @@
     ],
     "pdf": {
         "attributes": [
-            "pdf-theme={{ basepath }}docs/common/pdf/theme.yml",
+            "pdf-theme={{ basepath }}/docs/common/pdf/theme.yml",
             "pdf-fontsdir=\"{{ basepath }}docs/common/fonts;GEM_FONTS_DIR\"",
             "allow-uri-read",
             "blockdiag=/usr/bin/blockdiag",
@@ -18,7 +18,7 @@
     },
     "html": {
         "attributes": [
-            "stylesheet={{ basepath }}docs/common/html/style.css",
+            "stylesheet={{ basepath }}/docs/common/html/style.css",
             "allow-uri-read",
             "toc=left",
             "java=/usr/bin/java",
