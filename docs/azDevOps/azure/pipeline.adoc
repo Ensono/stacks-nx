@@ -35,6 +35,10 @@ Currently knows how to set the build number for Azure DevOps.
 | `infra:output` | Present the Terraform outputs as a JSON string
 | `setup:dev` | Create a shell script which will configure the environment variables based on the `build/config/stage_envvars.yaml`
 | `setup:environment` | Ensure that the environment is configured correctly. This can be used to ensure that all the necessary environment variables have been set.
+| `app:lint` | Perform App Linting on repo.
+| `app:install` | Installs required modules required for the application.
+| `app:test` | Runs jest tests for the application.
+| `app:local:build` | Prepares the application for building a docker image.
 | `app:build` | Builds a Docker Image for the associated Stacks-App
 | `app:deploy` | Deploys associated Docker Image to AKS Cluster via K8s manifests, and updates the secret value to ensure redis connection string is exposed.
 | `tests:infra:init` | Initialse the Inspec test profile. 

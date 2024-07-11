@@ -16,9 +16,17 @@ image::images/ado_features.png[]
 
 This feature is required to ensure that the infrastructure and application image are built and deployed, as specified by the code. If this flag is not true, your infrastructure and application will not be configured. This is useful for when you wish to test, or run features added to your pipelines without constantly having to run stages you do not intend to test.
 
-=== Run Linting & Docs Tasks?
+=== Run Linting?
 
-This feature allows you to determine whether you run the code lint and validation tests as well as generate pdf documentation. You may wish to avoid this when testing new features, as it takes a few minutes to run and you might not care about output of documentation or correct code formatting whilst troubleshooting or testing features.
+This feature allows you to determine whether you run the yaml/terraform lint and validation.
+
+=== Run Document Generation?
+
+This task generates pdf documentation from the `docs/azureDevOps/azure` directory. You may wish to avoid this when testing new features, as it takes a few minutes to run and you might not care about output of documentation whilst troubleshooting or testing features.
+
+=== Run Application Build?
+
+This task will run the local application source code lint, tests, local build, docker image build and pushing to an ACR. You may not wish to do this if you are testing the pipeline and have already built a stable image (e.g. if your terraform has errored or you are testing a new pipeline feature).
 
 === Destroy Environment
 
