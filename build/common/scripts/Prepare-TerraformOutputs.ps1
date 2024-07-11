@@ -38,12 +38,16 @@ Write-Verbose "Invoked Terraform with workspace argument"
 # Capture the output of Invoke-Terraform
 $terraformOutput = Invoke-Terraform -Output -Path $Terraform_File_Directory
 
-# Prepare the script invocation with parameters
-$scriptCommand = "& $Script_Path -prefix 'TFOUT' -key 'value' -passthru"
+# Save the output to a temporary file
+$tempFile = [System.IO.Path]::GetTempFileName()
+$terraformOutput | Out-File -FilePath $tempFile
 
-# Execute the script and capture the output
-$scriptOutput = Invoke-Expression "$scriptCommand $terraformOutput"
+# Run the external script with the captured output
+& $Script_Path -prefix "TFOUT" -key "value" -passthru (Get-Content $tempFile)
 
-# Convert the output to YAML and write to file
+# Clean up the temporary file
+Remove-Item -Path $tempFile -Force
+
+# Convert the script output to YAML and write to file
 $scriptOutput | ConvertTo-Yaml | Out-File -Path "${PWD}/tf_outputs.yml"
 Write-Verbose "Generated tf_outputs.yml @ ${PWD}"
