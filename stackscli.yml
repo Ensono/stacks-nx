@@ -45,7 +45,6 @@ setup:
         --overwrite
         --skipGit
         --no-interactive
-        --useDev
       desc: Create "stacks-nx" Workspace
       applyProperties: true
 
