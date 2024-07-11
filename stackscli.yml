@@ -6,14 +6,26 @@ framework:
     - name: node
       version: ">= 18.13"
 
-# The init stage are things that are required to run before the template is run
-init:
+# Pipeline files
+pipeline:
+  # Pipeline files for ADO
+  - type: azdo
+    files:
+      - name: build
+        path: build/azDevOps/azure/deploy-infrastructure.yml
+      - name: variable
+        path: build/azDevOps/azure/pipeline-vars.yml
+    templates:
+      - name: variable
+        path: build/azDevOps/azure/pipeline-vars.yml
+
+setup:
   operations:
     - action: cmd
       cmd: npx
       args: --yes
-        @ensono-stacks/create-stacks-workspace@latest {{ .Project.Name }}
-        --dir={{ .Project.Directory.WorkingDir }}
+        @ensono-stacks/create-stacks-workspace {{ .Project.Name }}
+        --dir={{ .Input.Directory.WorkingDir }}
         --nxVersion={{ .Project.Framework.Version }}
         --preset={{ .Project.Framework.Option }}
         --business.company={{ .Input.Business.Company }}
@@ -32,7 +44,15 @@ init:
         --vcs.url={{ .Project.SourceControl.URL }}
         --overwrite
         --skipGit
-        --no-nxCloud
         --no-interactive
       desc: Create "stacks-nx" Workspace
       applyProperties: true
+
+    - action: cmd
+      cmd: node
+      args: "{{ .Project.Directory.TempDir }}/tools/configure-pipeline.js
+        --tmpDir={{ .Project.Directory.TempDir }}
+        --targetDir={{ .Project.Directory.WorkingDir }}
+        --platform={{ .Input.Cloud.Platform }}
+        --pipeline={{ .Input.Pipeline }}"
+      desc: Scaffold Pipeline
