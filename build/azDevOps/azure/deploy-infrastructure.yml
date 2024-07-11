@@ -1,0 +1,342 @@
+#############################################################################################################################
+# This is a generated file which includes some replacements.                                                                #
+# It is still very much recommended to go through this and ensure all variables are correct for your business/domain        #
+# All variables are defined in a global scope.                                                                              #
+# All Terraform produced resource names are using a labels module ensuring a predictable naming convention                  #
+# E.g.: variables for company, project, stage and domain will produce a name of `$company-$project-$stage-$domain`          #
+# NB: Some resources e.g. blob storage only allow for alpha numeric characters so the name is adjusted accordingly          #
+#  ==> `$company$project$stage$domain`                                                                                      #
+#############################################################################################################################
+name: "$(Build.SourceBranchName)-init"
+
+pr:
+  - master
+
+# Define the triggers for when the build runs automatically
+trigger:
+  branches:
+    include:
+      - "main"
+  paths:
+    include:
+      - "*"
+
+# Configure parameters for running the build
+parameters:
+  - name: deploy
+    displayName: Deploy Environment
+    type: boolean
+    default: true
+  - name: run_lint
+    displayName: Run Linting?
+    type: boolean
+    default: true
+  - name: run_docs
+    displayName: Run Document Generation?
+    type: boolean
+    default: true
+  - name: run_app_build
+    displayName: Run Application Build?
+    type: boolean
+    default: true
+  - name: destroy
+    displayName: Destroy Environment
+    type: boolean
+    default: false
+  - name: upload
+    displayName: Upload generated files
+    type: boolean
+    default: false
+  - name: force_deploy
+    displayName: Force deploy regardless of branch
+    type: boolean
+    default: false
+  - name: pre_release
+    displayName: Create a pre-release from feature branch
+    type: boolean
+    default: false
+
+  - name: stages
+    type: object
+    default:
+      - stage: NonProd
+        dependsOn: Build
+        condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
+        environment_shortname: nonprod
+        domain_internal: $(base_domain_internal_nonprod)
+        build_app: BuildAppNonProd
+        deployment_infra: InfraNonProd
+        deployment_apps: K8sNonProd
+      - stage: Prod
+        dependsOn: Build
+        condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+        environment_shortname: prod
+        domain_internal: $(base_domain_internal_prod)
+        build_app: BuildAppProd
+        deployment_infra: InfraProd
+        deployment_apps: K8sProd
+
+variables:
+  - template: pipeline-vars.yml
+  - template: agent-config-vars.yml
+
+  - name: CHEF_LICENSE
+    value: accept-silent
+
+  # Versioning
+  - name: version_major
+    value: 0
+  - name: version_minor
+    value: 1
+  - name: version_revision
+    value: $[counter(join(variables['version_major'], join('-', variables['version_minor'])), 0)]
+  - name: version_number
+    value: "$(version_major).$(version_minor).$(version_revision)-$(Build.SourceBranchName)"
+  - name: DOCKER_IMAGE_TAG
+    value: "$(version_number)"
+
+stages:
+  - stage: Build
+    jobs:
+      - job: Setup
+        pool:
+          vmImage: $(pool_vm_image)
+        steps:
+          - ${{ if or(eq(parameters.run_lint, true), eq(parameters.run_docs, true)) }}:
+              - template: templates/setup.yml
+                parameters:
+                  TaskctlVersion: ${{ variables.TaskctlVersion }}
+
+          # lint files in the repo
+          - ${{ if eq(parameters.run_lint, true) }}:
+              - task: Bash@3
+                displayName: Terraform Lint
+                inputs:
+                  targetType: inline
+                  script: taskctl lint
+
+          # Create the documentation for the repo
+          - ${{ if eq(parameters.run_docs, true) }}:
+              - task: Bash@3
+                displayName: Documentation
+                inputs:
+                  targetType: inline
+                  script: taskctl docs
+
+          # Upload the documentation as a build artifact
+          - ${{ if eq(parameters.run_docs, true) }}:
+              - task: PublishBuildArtifacts@1
+                displayName: Publish Documentation
+                inputs:
+                  pathToPublish: $(Build.SourcesDirectory)/outputs/docs
+                  artifactName: docs
+
+  # Called Non-Prod instead of Dev as all Non-Production stages will deploy to here
+  - ${{ each stage in parameters.stages }}:
+      - stage: ${{ stage.stage }}
+        dependsOn: ${{ stage.dependsOn }}
+        condition: and(succeeded(), or(${{ stage.condition }}, ${{ parameters.force_deploy }}))
+        variables:
+          # Pull in the non-production credentials for the build to use
+          - group: sp-creds
+        jobs:
+          - deployment: ${{ stage.build_app }}
+            condition: and(succeeded(), eq('${{ parameters.run_app_build }}', true))
+            environment: ${{ variables.domain }}-${{ stage.environment_shortname }}
+            pool:
+              vmImage: $(pool_vm_image)
+
+            strategy:
+              runOnce:
+                deploy:
+                  steps:
+                    - template: templates/setup.yml
+                      parameters:
+                        TaskctlVersion: ${{ variables.TaskctlVersion }}
+
+                    - ${{ if eq(parameters.run_app_build, true) }}:
+                      - task: Bash@3
+                        displayName: Install NPM
+                        inputs:
+                          targetType: inline
+                          script: taskctl app:install
+
+                    - ${{ if eq(parameters.run_app_build, true) }}:
+                      - task: Bash@3
+                        displayName: Application Lint
+                        inputs:
+                          targetType: inline
+                          script: taskctl app:lint
+                    
+                    - ${{ if eq(parameters.run_app_build, true) }}:
+                      - task: Bash@3
+                        displayName: Application Test
+                        inputs:
+                          targetType: inline
+                          script: taskctl app:test
+
+                    - ${{ if eq(parameters.run_app_build, true) }}:
+                      - task: Bash@3
+                        displayName: Prepare & Build Application Image
+                        inputs:
+                          targetType: inline
+                          script: |
+                            taskctl app:local:build
+                            taskctl app:build
+                        env:
+                          provider: $(provider) # could be CLOUD_PLATFORM
+                          image_name: $(image_name)
+                          registry_name: $(registry_fqdn)
+                          registry_resource_group: $(registry_resource_group)
+                          build_args: -f $(app_directory)
+                          tag: $(image_tag)
+
+          - deployment: ${{ stage.deployment_infra }}
+            dependsOn: ${{ stage.build_app }}
+            condition: and(succeeded(), eq('${{ parameters.deploy }}', true))
+            environment: ${{ variables.domain }}-${{ stage.environment_shortname }}
+            pool:
+              vmImage: $(pool_vm_image)
+
+            strategy:
+              runOnce:
+                deploy:
+                  steps:
+                    - template: templates/setup.yml
+                      parameters:
+                        TaskctlVersion: ${{ variables.TaskctlVersion }}
+
+                    # Create a tfvars file for the values
+                    # This is so that variables can be set and reused as required
+                    - task: Bash@3
+                      displayName: Create Terraform variables file
+                      inputs:
+                        targetType: inline
+                        script: |
+                          taskctl infra:vars
+                      env:
+                        TF_FILE_LOCATION: /app/deploy/azure/terraform
+
+                        ##### LABEL
+                        TF_VAR_custom_name: $(custom_name) # Use this if you wish for the Cloudposse Terraform Null Label resource to overwrite the claranet naming convention
+                        TF_VAR_name_company: $(company)
+                        TF_VAR_name_project: $(project)
+                        TF_VAR_name_environment: ${{ stage.environment_shortname }}
+                        TF_VAR_name_domain: $(domain)
+
+                        ##### REDIS (You do not need to pass anything here if you do not wish to create a Redis Instance)
+                        TF_VAR_create_redis: $(create_redis) # Set to "true" if you want a Redis Instance and "false" if you do not.
+                        TF_VAR_redis_resource_group_name: $(redis_resource_group_name)
+                        TF_VAR_location: $(region)
+                        TF_VAR_maxmemory_policy: $(maxmemory_policy)
+                        TF_VAR_sku_name: $(sku_name)
+
+                        ##### DNS & Public IP (All need to exist and should have been created prior (stacks-ancillary-resources & stacks-infrastructure-aks) EXCEPT the A Record name!)
+                        TF_VAR_dns_zone: $(dns_zone)
+                        TF_VAR_dns_zone_rg: $(dns_zone_rg)
+                        TF_VAR_dns_a_record_name: $(dns_a_record_name)
+
+                        TF_VAR_app_gateway_frontend_ip_name: $(app_gateway_frontend_ip_name)
+                        TF_VAR_app_gateway_frontend_ip_rg: $(app_gateway_frontend_ip_rg)
+
+                    # Upload the Terraform variables file and the plan for debugging
+                    - ${{ if eq(parameters.upload, true) }}:
+                        - template: templates/upload.yml
+
+                    # Remove the infrastructure if the parameter has been set
+                    - ${{ if eq(parameters.destroy, true) }}:
+                        - task: Bash@3
+                          displayName: Destroy Environment
+                          inputs:
+                            targetType: inline
+                            script: |
+                              taskctl infrastructure_destroy
+                          env:
+                            TF_FILE_LOCATION: /app/deploy/azure/terraform
+                            TF_BACKEND_INIT: "key=$(tf_state_key),container_name=$(tf_state_container),storage_account_name=$(tf_state_storage),resource_group_name=$(tf_state_rg)"
+                            TF_BACKEND_DESTROY_PLAN: '-input=false,-out="destroy"'
+                            TF_VAR_name_environment: ${{ stage.environment_shortname }}
+
+                    # Create the resources for the Redis Cache Instance
+                    - ${{ if eq(parameters.deploy, true) }}:
+                        - task: Bash@3
+                          displayName: Deploy DNS & Redis (If Selected)
+                          inputs:
+                            targetType: inline
+                            script: |
+                              taskctl infrastructure
+                          env:
+                            TF_FILE_LOCATION: /app/deploy/azure/terraform
+                            TF_BACKEND_INIT: "key=$(tf_state_key),container_name=$(tf_state_container),storage_account_name=$(tf_state_storage),resource_group_name=$(tf_state_rg)"
+                            TF_BACKEND_PLAN: '-input=false,-out="tfplan"'
+                            TF_VAR_name_environment: ${{ stage.environment_shortname }}
+
+                    # Perform infrastructure tests
+                    - ${{ if eq(parameters.deploy, true) }}:
+                        - template: templates/infra-tests.yml
+                          parameters:
+                            CHEF_LICENSE: $(CHEF_LICENSE)
+                            INSPEC_FILES: /app/deploy/azure/tests
+                            TF_FILE_LOCATION: /app/deploy/azure/terraform
+                            REPORT_FILENAME: inspec_azure_redis.xml
+                            TF_VAR_name_environment: ${{ stage.environment_shortname }}
+                            TF_VAR_resource_group_location: $(region)
+                            TF_VAR_resource_group_name: $(redis_resource_group_name)
+
+                    - ${{ if eq(parameters.deploy, true) }}:
+                        - task: PublishTestResults@2
+                          inputs:
+                            testResultsFormat: JUnit
+                            testResultsFiles: outputs/tests/inspec_azure_redis.xml
+                            testRunTitle: Terraform Redis Tests
+                            failTaskOnFailedTests: true
+
+                    - task: Bash@3
+                      displayName: Deploy K8s Manifest YAML /w Application Image
+                      inputs:
+                        targetType: inline
+                        script: |
+                          taskctl infra:init
+                          taskctl app:deploy
+                      env:
+                        TF_FILE_LOCATION: /app/deploy/azure/terraform
+                        TF_VAR_name_environment: ${{ stage.environment_shortname }}
+                        TF_BACKEND_INIT: "key=$(tf_state_key),container_name=$(tf_state_container),storage_account_name=$(tf_state_storage),resource_group_name=$(tf_state_rg)"
+                        provider: $(provider) # could be CLOUD_PLATFORM
+                        target: $(aks_cluster)
+                        identifier: $(aks_resource_group)
+                        add_redis_key: $(create_redis)
+
+  - stage: Release
+    dependsOn:
+      - ${{ if ne(variables['Build.SourceBranch'], 'refs/heads/master') }}:
+          - NonProd
+      - ${{ else }}:
+          - Prod
+    condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(${{ parameters.pre_release }}, true)))
+    variables:
+      # TODO: Credentials should come from another group. `amido-stacks-github-credentials` are the old creds
+      - group: github-creds
+      - name: version_number
+        value: "$(version_major).$(version_minor).$(version_revision)"
+    jobs:
+      - job: CreateGitHubRelease
+        pool:
+          vmImage: $(pool_vm_image)
+        steps:
+          - template: templates/setup.yml
+            parameters:
+              TaskctlVersion: ${{ variables.TaskctlVersion }}
+
+          - task: Bash@3
+            displayName: Publish Release
+            inputs:
+              targetType: inline
+              script: |
+                taskctl release
+            env:
+              STAGE: "release"
+              PUBLISH_RELEASE: "true"
+              GITHUB_TOKEN: "$(GITHUB_TOKEN)"
+              ${{ if ne(variables['Build.SourceBranch'], 'refs/heads/master') }}:
+                PRERELEASE: "true"
