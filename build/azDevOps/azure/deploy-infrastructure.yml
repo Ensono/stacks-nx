@@ -154,45 +154,40 @@ stages:
                       parameters:
                         TaskctlVersion: ${{ variables.TaskctlVersion }}
 
-                    - ${{ if eq(parameters.run_app_build, true) }}:
-                      - task: Bash@3
-                        displayName: Install NPM
-                        inputs:
-                          targetType: inline
-                          script: taskctl app:install
-
-                    - ${{ if eq(parameters.run_app_build, true) }}:
-                      - task: Bash@3
-                        displayName: Application Lint
-                        inputs:
-                          targetType: inline
-                          script: taskctl app:lint
-                    
-                    - ${{ if eq(parameters.run_app_build, true) }}:
-                      - task: Bash@3
-                        displayName: Application Test
-                        inputs:
-                          targetType: inline
-                          script: taskctl app:test
-
-                    - ${{ if eq(parameters.run_app_build, true) }}:
-                      - task: Bash@3
-                        displayName: Prepare & Build Application Image
-                        inputs:
-                          targetType: inline
-                          script: |
-                            taskctl app:local:build
-                            taskctl app:build
-                        env:
-                          provider: $(provider) # could be CLOUD_PLATFORM
-                          image_name: $(image_name)
-                          registry_name: $(registry_fqdn)
-                          registry_resource_group: $(registry_resource_group)
-                          build_args: -f $(app_directory)
-                          tag: $(image_tag)
+                    - task: Bash@3
+                      displayName: Install NPM
+                      inputs:
+                        targetType: inline
+                        script: taskctl app:install
+                  
+                    - task: Bash@3
+                      displayName: Application Lint
+                      inputs:
+                        targetType: inline
+                        script: taskctl app:lint
+                  
+                    - task: Bash@3
+                      displayName: Application Test
+                      inputs:
+                        targetType: inline
+                        script: taskctl app:test
+                  
+                    - task: Bash@3
+                      displayName: Prepare & Build Application Image
+                      inputs:
+                        targetType: inline
+                        script: |
+                          taskctl app:local:build
+                          taskctl app:build
+                      env:
+                        provider: $(provider) # could be CLOUD_PLATFORM
+                        image_name: $(image_name)
+                        registry_name: $(registry_fqdn)
+                        registry_resource_group: $(registry_resource_group)
+                        build_args: -f $(app_directory)
+                        tag: $(image_tag)
 
           - deployment: ${{ stage.deployment_infra }}
-            dependsOn: ${{ stage.build_app }}
             condition: and(succeeded(), eq('${{ parameters.deploy }}', true))
             environment: ${{ variables.domain }}-${{ stage.environment_shortname }}
             pool:
