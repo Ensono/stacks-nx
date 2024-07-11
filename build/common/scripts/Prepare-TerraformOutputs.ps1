@@ -35,19 +35,5 @@ if (!$Environment) {
 Invoke-Terraform -Workspace -Arguments $Environment -Path $Terraform_File_Directory
 Write-Verbose "Invoked Terraform with workspace argument"
 
-# Capture the output of Invoke-Terraform
-$terraformOutput = Invoke-Terraform -Output -Path $Terraform_File_Directory
-
-# Save the output to a temporary file
-$tempFile = [System.IO.Path]::GetTempFileName()
-$terraformOutput | Out-File -FilePath $tempFile
-
-# Run the external script with the captured output
-& $Script_Path -prefix "TFOUT" -key "value" -passthru (Get-Content $tempFile)
-
-# Clean up the temporary file
-Remove-Item -Path $tempFile -Force
-
-# Convert the script output to YAML and write to file
-$scriptOutput | ConvertTo-Yaml | Out-File -Path "${PWD}/tf_outputs.yml"
-Write-Verbose "Generated tf_outputs.yml @ ${PWD}"
+Invoke-Terraform -Output -Path $Terraform_File_Directory | /app/build/common/scripts/Set-EnvironmentVars.ps1 -prefix "TFOUT" -key "value" -passthru | ConvertTo-Yaml | Out-File -Path ${PWD}/tf_outputs.yml
+Write-Verbose "Generated tf_outputs.yml @ ${PWD}"Write-Verbose "Generated tf_outputs.yml @ ${PWD}"
