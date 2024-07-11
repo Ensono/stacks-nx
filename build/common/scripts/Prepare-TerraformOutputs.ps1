@@ -36,4 +36,4 @@ Invoke-Terraform -Workspace -Arguments $Environment -Path $Terraform_File_Direct
 Write-Verbose "Invoked Terraform with workspace argument"
 
 Invoke-Terraform -Output -Path $Terraform_File_Directory | /app/build/common/scripts/Set-EnvironmentVars.ps1 -prefix "TFOUT" -key "value" -passthru | ConvertTo-Yaml | Out-File -Path ${PWD}/tf_outputs.yml
-Write-Verbose "Generated tf_outputs.yml @ ${PWD}"Write-Verbose "Generated tf_outputs.yml @ ${PWD}"
+Write-Verbose "Generated tf_outputs.yml @ ${PWD}"
