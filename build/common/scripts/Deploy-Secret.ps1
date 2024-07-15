@@ -59,7 +59,6 @@ if ($env:add_redis_key -eq "true") {
   Write-Verbose "Generating K8s Secret"
   $redis_connection_string = "$($redis_hostname):$($redis_port),password=$($redis_primary_access_key),ssl=True,abortConnect=False"
   $base64EncodedString = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($redis_connection_string))
-  Write-Verbose "Base64 Encoded String: $base64EncodedString"
 
   # Ensure that the secret isn't present, and add. If it is, skip this step entirely.
   Write-Verbose "Logging Into K8s & Seeing If Secret Exists"
