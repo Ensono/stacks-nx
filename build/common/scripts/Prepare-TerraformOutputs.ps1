@@ -35,15 +35,5 @@ if (!$Environment) {
 Invoke-Terraform -Workspace -Arguments $Environment -Path $Terraform_File_Directory
 Write-Verbose "Invoked Terraform with workspace argument"
 
-# Capture the output of Invoke-Terraform
-$terraformOutput = Invoke-Terraform -Output -Path $Terraform_File_Directory
-
-# Prepare the script invocation with parameters
-$scriptCommand = "& $Script_Path -prefix 'TFOUT' -key 'value' -passthru"
-
-# Execute the script and capture the output
-$scriptOutput = Invoke-Expression "$scriptCommand $terraformOutput"
-
-# Convert the output to YAML and write to file
-$scriptOutput | ConvertTo-Yaml | Out-File -Path "${PWD}/tf_outputs.yml"
+Invoke-Terraform -Output -Path $Terraform_File_Directory | /app/build/common/scripts/Set-EnvironmentVars.ps1 -prefix "TFOUT" -key "value" -passthru | ConvertTo-Yaml | Out-File -Path ${PWD}/tf_outputs.yml
 Write-Verbose "Generated tf_outputs.yml @ ${PWD}"

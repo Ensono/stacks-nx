@@ -17,7 +17,9 @@ include::introduction.adoc[]
 
 include::infrastructure.adoc[]
 
-include::app_build_deploy.adoc[]
+include::app_build.adoc[]
+
+include::app_deploy.adoc[]
 
 <<<
 
