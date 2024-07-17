@@ -61,7 +61,7 @@ parameters:
     default:
       - stage: NonProd
         dependsOn: Build
-        condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
+        condition: ne(variables['Build.SourceBranch'], 'refs/heads/main')
         environment_shortname: nonprod
         domain_internal: $(base_domain_internal_nonprod)
         build_app: BuildAppNonProd
@@ -69,7 +69,7 @@ parameters:
         deployment_apps: K8sNonProd
       - stage: Prod
         dependsOn: Build
-        condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+        condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
         environment_shortname: prod
         domain_internal: $(base_domain_internal_prod)
         build_app: BuildAppProd
@@ -140,7 +140,17 @@ stages:
           # Pull in the non-production credentials for the build to use
           - group: sp-creds
         jobs:
+
+          - job: set_dependencies
+            displayName: 'Set Dependencies for Deployment'
+            pool: server
+            steps:
+              - ${{ if eq(parameters.run_build_app, 'true') }}:
+                  - script: echo "Running build_app"
+                    name: build_app_step
+
           - deployment: ${{ stage.build_app }}
+            dependsOn: set_dependencies
             condition: and(succeeded(), eq('${{ parameters.run_app_build }}', true))
             environment: ${{ variables.domain }}-${{ stage.environment_shortname }}
             pool:
@@ -188,7 +198,12 @@ stages:
                         tag: $(image_tag)
 
           - deployment: ${{ stage.deployment_infra }}
-            condition: and(succeeded(), eq('${{ parameters.deploy }}', true))
+            dependsOn:
+            - ${{ if eq(parameters.run_build_app, 'false') }}:
+              - set_dependencies
+            - ${{ else }}:
+              - ${{ stage.build_app }}
+            condition: or(eq( ${{ parameters.deploy }}, true), eq( ${{ parameters.destroy }}, true))
             environment: ${{ variables.domain }}-${{ stage.environment_shortname }}
             pool:
               vmImage: $(pool_vm_image)
@@ -286,21 +301,23 @@ stages:
                             testRunTitle: Terraform Redis Tests
                             failTaskOnFailedTests: true
 
-                    - task: Bash@3
-                      displayName: Deploy K8s Manifest YAML /w Application Image
-                      inputs:
-                        targetType: inline
-                        script: |
-                          taskctl infra:init
-                          taskctl app:deploy
-                      env:
-                        TF_FILE_LOCATION: /app/deploy/azure/terraform
-                        TF_VAR_name_environment: ${{ stage.environment_shortname }}
-                        TF_BACKEND_INIT: "key=$(tf_state_key),container_name=$(tf_state_container),storage_account_name=$(tf_state_storage),resource_group_name=$(tf_state_rg)"
-                        provider: $(provider) # could be CLOUD_PLATFORM
-                        target: $(aks_cluster)
-                        identifier: $(aks_resource_group)
-                        add_redis_key: $(create_redis)
+                    # Perform Manifest Deploy
+                    - ${{ if eq(parameters.deploy, true) }}:
+                      - task: Bash@3
+                        displayName: Deploy K8s Manifest YAML /w Application Image
+                        inputs:
+                          targetType: inline
+                          script: |
+                            taskctl infra:init
+                            taskctl app:deploy
+                        env:
+                          TF_FILE_LOCATION: /app/deploy/azure/terraform
+                          TF_VAR_name_environment: ${{ stage.environment_shortname }}
+                          TF_BACKEND_INIT: "key=$(tf_state_key),container_name=$(tf_state_container),storage_account_name=$(tf_state_storage),resource_group_name=$(tf_state_rg)"
+                          provider: $(provider) # could be CLOUD_PLATFORM
+                          target: $(aks_cluster)
+                          identifier: $(aks_resource_group)
+                          add_redis_key: $(create_redis)
 
   - stage: Release
     dependsOn:
