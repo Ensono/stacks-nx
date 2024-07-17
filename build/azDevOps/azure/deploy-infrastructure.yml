@@ -16,7 +16,7 @@ pr:
 trigger:
   branches:
     include:
-      - "main"
+      - "master"
   paths:
     include:
       - "*"
@@ -61,7 +61,7 @@ parameters:
     default:
       - stage: NonProd
         dependsOn: Build
-        condition: ne(variables['Build.SourceBranch'], 'refs/heads/main')
+        condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
         environment_shortname: nonprod
         domain_internal: $(base_domain_internal_nonprod)
         build_app: BuildAppNonProd
@@ -69,7 +69,7 @@ parameters:
         deployment_apps: K8sNonProd
       - stage: Prod
         dependsOn: Build
-        condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
+        condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
         environment_shortname: prod
         domain_internal: $(base_domain_internal_prod)
         build_app: BuildAppProd
