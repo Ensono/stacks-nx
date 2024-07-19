@@ -16,7 +16,7 @@ pr:
 trigger:
   branches:
     include:
-      - "master"
+      - "main"
   paths:
     include:
       - "*"
@@ -138,7 +138,7 @@ stages:
         condition: and(succeeded(), or(${{ stage.condition }}, ${{ parameters.force_deploy }}))
         variables:
           # Pull in the non-production credentials for the build to use
-          - group: sp-creds
+          - group: azure-sp-creds
         jobs:
 
           - job: set_dependencies
@@ -318,6 +318,7 @@ stages:
                           target: $(aks_cluster)
                           identifier: $(aks_resource_group)
                           add_redis_key: $(create_redis)
+                          namespace: $(namespace)
 
   - stage: Release
     dependsOn:
@@ -328,7 +329,7 @@ stages:
     condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(${{ parameters.pre_release }}, true)))
     variables:
       # TODO: Credentials should come from another group. `amido-stacks-github-credentials` are the old creds
-      - group: github-creds
+      - group: release-github-credentials
       - name: version_number
         value: "$(version_major).$(version_minor).$(version_revision)"
     jobs:
