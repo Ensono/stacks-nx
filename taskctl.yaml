@@ -40,8 +40,10 @@ pipelines:
   
   app:
     - task: setup:environment
-    - task: app:install
+    - task: infra:init
       depends_on: setup:environment
+    - task: app:install
+      depends_on: infra:init
     - task: app:lint
       depends_on: app:install
     - task: app:test
