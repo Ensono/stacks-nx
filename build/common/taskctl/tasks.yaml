@@ -114,9 +114,7 @@ tasks:
     context: powershell
     description: Prepare the application image to be pushed to Image Registry
     command:
-      # - Build-DockerImage -provider "azure" -name "cycle14test" -registry "redistestreg.azurecr.io" -tag "test" -group "danredistest" -buildargs "-f ./apps/stacks-app/Dockerfile" -push
       - Build-DockerImage -provider $env:provider -name $env:image_name -registry $env:registry_name -tag $env:tag -group $env:registry_resource_group -buildargs $env:build_args -push
-
 
   app:deploy:
     context: powershell
