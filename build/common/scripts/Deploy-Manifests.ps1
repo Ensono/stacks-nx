@@ -24,6 +24,7 @@ if ($VerboseOutput) {
   Write-Verbose "Verbose mode enabled"
 }
 
+
 $originalDirectory = $PWD
 Set-Location -Path $path
 Write-Verbose "Adding K8s manifests!"

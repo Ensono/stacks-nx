@@ -127,6 +127,7 @@ tasks:
         ./build/common/scripts/Deploy-Secret.ps1 -VerboseOutput
         ./build/common/scripts/Deploy-Manifests.ps1 -path "./deploy/common/app/k8s-manifest" -manifestsToAdd @("deployment.yaml", "service.yaml", "ingress.yaml") -VerboseOutput
 
+
   setup:dev:
     context: powershell
     description: Create a shell script to configure the environment variables
