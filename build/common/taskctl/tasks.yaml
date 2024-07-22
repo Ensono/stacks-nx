@@ -122,10 +122,10 @@ tasks:
     command:
       - |
         Import-Module Az.Aks # This is loaded here as when it is imported in lower down modules you end up with conflicts with assembly tasks within Azure DevOps Backend!
-        Invoke-Kubectl -apply -arguments @(".\deploy\common\app\k8s-manifest\namespace.yml") -provider $env:provider -target $env:target -identifier $env:identifier
+        ./build/common/scripts/Deploy-Manifests.ps1 -path "./deploy/common/app/k8s-manifest" -manifestsToAdd @("namespace.yaml") -VerboseOutput # This is performed separately so we can add the secret.yaml first so deployment.yaml does not break when referencing it.
         ./build/common/scripts/Prepare-TerraformOutputs.ps1 -VerboseOutput
         ./build/common/scripts/Deploy-Secret.ps1 -VerboseOutput
-        ./build/common/scripts/Deploy-Manifests.ps1 -VerboseOutput
+        ./build/common/scripts/Deploy-Manifests.ps1 -path "./deploy/common/app/k8s-manifest" -manifestsToAdd @("deployment.yaml", "service.yaml," "ingress.yaml") -VerboseOutput
 
   setup:dev:
     context: powershell
