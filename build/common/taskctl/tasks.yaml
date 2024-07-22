@@ -125,7 +125,8 @@ tasks:
         ./build/common/scripts/Deploy-Manifests.ps1 -path "./deploy/common/app/k8s-manifest" -manifestsToAdd @("namespace.yaml") -VerboseOutput # This is performed separately so we can add the secret.yaml first so deployment.yaml does not break when referencing it.
         ./build/common/scripts/Prepare-TerraformOutputs.ps1 -VerboseOutput
         ./build/common/scripts/Deploy-Secret.ps1 -VerboseOutput
-        ./build/common/scripts/Deploy-Manifests.ps1 -path "./deploy/common/app/k8s-manifest" -manifestsToAdd @("deployment.yaml", "service.yaml," "ingress.yaml") -VerboseOutput
+        ./build/common/scripts/Deploy-Manifests.ps1 -path "./deploy/common/app/k8s-manifest" -manifestsToAdd @("deployment.yaml", "service.yaml", "ingress.yaml") -VerboseOutput
+
 
   setup:dev:
     context: powershell
