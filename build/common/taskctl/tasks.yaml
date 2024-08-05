@@ -1,4 +1,10 @@
 tasks:
+  image-pull:
+    context: powershell
+    description: Pulls the image
+    command:
+      - ""
+
   build:number:
     context: powershell
     description: Update the build number
@@ -99,7 +105,7 @@ tasks:
     description: Lint Application
     command:
     - npx nx run stacks-app:lint
-  
+
   app:test:
     description: Test Application
     command:
@@ -126,7 +132,6 @@ tasks:
         ./build/common/scripts/Prepare-TerraformOutputs.ps1 -VerboseOutput
         ./build/common/scripts/Deploy-Secret.ps1 -VerboseOutput
         ./build/common/scripts/Deploy-Manifests.ps1 -path "./deploy/common/app/k8s-manifest" -manifestsToAdd @("deployment.yaml", "service.yaml", "ingress.yaml") -VerboseOutput
-
 
   setup:dev:
     context: powershell

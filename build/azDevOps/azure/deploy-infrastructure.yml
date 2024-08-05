@@ -169,19 +169,19 @@ stages:
                       inputs:
                         targetType: inline
                         script: taskctl app:install
-                  
+
                     - task: Bash@3
                       displayName: Application Lint
                       inputs:
                         targetType: inline
                         script: taskctl app:lint
-                  
+
                     - task: Bash@3
                       displayName: Application Test
                       inputs:
                         targetType: inline
                         script: taskctl app:test
-                  
+
                     - task: Bash@3
                       displayName: Prepare & Build Application Image
                       inputs:
