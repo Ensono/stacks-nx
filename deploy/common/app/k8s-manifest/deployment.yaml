@@ -2,11 +2,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nx-app
-  namespace: nx
+  namespace: ${namespace}
   labels:
     app: nx-app
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: nx-app
@@ -17,11 +17,10 @@ spec:
     spec:
       containers:
       - name: nx-container
-        image: ensonoeuw.azurecr.io/nx:latest # Replace with the NX App Image
+        image: ${k8s_image}
         ports:
         - containerPort: 3000
         envFrom:
-        # - configMapRef:
-        #     name: nx-config
         - secretRef:
             name: nx-secret
+            optional: true

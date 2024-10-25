@@ -1,0 +1,175 @@
+name: stacks-nx
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  actions: read
+  checks: write
+  contents: read
+  pull-requests: write
+
+env:
+  CLOUD_PROVIDER: aws
+  TaskctlVersion: "1.5.2"
+  DOCKER_IMAGE_TAG: "0.0.${{ github.RUN_NUMBER }}"
+
+jobs:
+  Setup:
+    runs-on: ubuntu-latest
+    environment: nonprod
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: ./build/github/templates/install-taskctl
+
+      - run: taskctl image-pull
+
+      - run: taskctl lint
+
+  BuildDev:
+    if: github.ref != 'refs/heads/main'
+    needs: Setup
+    runs-on: ubuntu-latest
+    environment: nonprod
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set environment variables
+        run: |
+          cat .github/workflows/ci.env >> $GITHUB_ENV
+
+      - name: Install TaskCTL
+        uses: ./build/github/templates/install-taskctl
+
+      - run: taskctl image-pull
+
+      - run: taskctl app:install
+
+      - run: taskctl app:lint
+
+      - run: taskctl app:test
+
+      - run: |
+          taskctl app:local:build
+          taskctl app:build
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ECR_REGION: "${{ env.REGION }}"
+          provider: ${{ env.CLOUD_PROVIDER }}
+          image_name: ${{ env.DOCKER_IMAGE_NAME }}
+          registry_name: ${{ secrets.AWS_ACCOUNT_ID }}.${{ env.ECR_DOMAIN}}
+          build_args: -f ./apps/stacks-app/Dockerfile
+          tag: ${{ env.DOCKER_IMAGE_TAG }}
+
+  DeployDev:
+    if: github.ref != 'refs/heads/master'
+    needs: BuildDev
+    runs-on: ubuntu-latest
+    environment: nonprod
+    env:
+      ENV_NAME: dev
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set environment variables
+        run: |
+          cat .github/workflows/ci.env >> $GITHUB_ENV
+
+      - name: Install TaskCTL
+        uses: ./build/github/templates/install-taskctl
+
+      - run: taskctl image-pull
+
+      - name: TaskCTL Deploy
+        run: taskctl deploy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: "${{ env.REGION }}"
+          # K8S Target Configuration
+          K8S_CLUSTER_TARGET: "ensono-stacks-nonprod-ew2-eks"
+          K8S_CLUSTER_IDENTIFIER: "${{ env.REGION }}"
+          NAMESPACE: "${{ env.ENV_NAME }}-${{ env.DOMAIN }}"
+          add_redis_key: false
+          # K8S Additional Deploy-Templater var substitutions
+          DOCKER_REGISTRY: "${{ secrets.AWS_ACCOUNT_ID }}.${{ env.ECR_DOMAIN}}"
+          DNS_BASE_DOMAIN: "nonprod.aws.stacks.ensono.com"
+
+  BuildProd:
+    if: github.ref == 'refs/heads/main'
+    needs: Setup
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set environment variables
+        run: |
+          cat .github/workflows/ci.env >> $GITHUB_ENV
+
+      - name: Install TaskCTL
+        uses: ./build/github/templates/install-taskctl
+
+      - run: taskctl image-pull
+
+      - run: taskctl app:install
+
+      - run: taskctl app:lint
+
+      - run: taskctl app:test
+
+      - run: |
+          taskctl app:local:build
+          taskctl app:build
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ECR_REGION: "${{ env.REGION }}"
+          provider: ${{ env.CLOUD_PROVIDER }}
+          image_name: ${{ env.DOCKER_IMAGE_NAME }}
+          registry_name: ${{ secrets.AWS_ACCOUNT_ID }}.${{ env.ECR_DOMAIN}}
+          build_args: -f ./apps/stacks-app/Dockerfile
+          tag: ${{ env.DOCKER_IMAGE_TAG }}
+
+  DeployProd:
+    if: github.ref == 'refs/heads/master'
+    needs: BuildProd
+    runs-on: ubuntu-latest
+    environment: prod
+    env:
+      ENV_NAME: prod
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set environment variables
+        run: |
+          cat .github/workflows/ci.env >> $GITHUB_ENV
+
+      - name: Install TaskCTL
+        uses: ./build/github/templates/install-taskctl
+
+      - run: taskctl image-pull
+
+      - name: TaskCTL Deploy
+        run: taskctl deploy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: "${{ env.REGION }}"
+          # K8S Target Configuration
+          K8S_CLUSTER_TARGET: "ensono-stacks-prod-ew2-eks"
+          K8S_CLUSTER_IDENTIFIER: "${{ env.REGION }}"
+          NAMESPACE: "${{ env.ENV_NAME }}-${{ env.DOMAIN }}"
+          add_redis_key: false
+          # K8S Additional Deploy-Templater var substitutions
+          DOCKER_REGISTRY: "${{ secrets.AWS_ACCOUNT_ID }}.${{ env.ECR_DOMAIN}}"
+          DNS_BASE_DOMAIN: "prod.aws.stacks.ensono.com"
