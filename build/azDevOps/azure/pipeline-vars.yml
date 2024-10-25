@@ -49,7 +49,7 @@ variables:
   - name: dns_zone
     value:
   - name: dns_a_record_name
-    value:
+    value: $(domain)
 
   - name: app_gateway_frontend_ip_rg
     value:
@@ -75,10 +75,6 @@ variables:
     value:
   - name: app_directory
     value: ./apps/stacks-app/Dockerfile
-  # - name: app_workspace
-  #   value: nx-workspace
-  - name: image_tag
-    value: latest
 
   # ------- Deploy
   - name: aks_cluster

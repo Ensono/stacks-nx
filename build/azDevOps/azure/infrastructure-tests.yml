@@ -39,6 +39,13 @@ stages:
             parameters:
               TaskctlVersion: ${{ variables.TaskctlVersion }}
 
+
+          - task: Bash@3
+            displayName: Image pull
+            inputs:
+              targetType: inline
+              script: taskctl image-pull-infratests
+
           - template: ../templates/infra-tests.yml
             parameters:
               CHEF_LICENSE: $(CHEF_LICENSE)

@@ -10,7 +10,7 @@
 name: "$(Build.SourceBranchName)-init"
 
 pr:
-  - master
+  - main
 
 # Define the triggers for when the build runs automatically
 trigger:
@@ -110,6 +110,12 @@ stages:
           # lint files in the repo
           - ${{ if eq(parameters.run_lint, true) }}:
               - task: Bash@3
+                displayName: Image pull
+                inputs:
+                  targetType: inline
+                  script: taskctl image-pull
+
+              - task: Bash@3
                 displayName: Terraform Lint
                 inputs:
                   targetType: inline
@@ -117,6 +123,12 @@ stages:
 
           # Create the documentation for the repo
           - ${{ if eq(parameters.run_docs, true) }}:
+              - task: Bash@3
+                displayName: Image pull
+                inputs:
+                  targetType: inline
+                  script: taskctl image-pull-docsenv
+
               - task: Bash@3
                 displayName: Documentation
                 inputs:
@@ -165,6 +177,12 @@ stages:
                         TaskctlVersion: ${{ variables.TaskctlVersion }}
 
                     - task: Bash@3
+                      displayName: Image pull
+                      inputs:
+                        targetType: inline
+                        script: taskctl image-pull
+
+                    - task: Bash@3
                       displayName: Install NPM
                       inputs:
                         targetType: inline
@@ -195,7 +213,7 @@ stages:
                         registry_name: $(registry_fqdn)
                         registry_resource_group: $(registry_resource_group)
                         build_args: -f $(app_directory)
-                        tag: $(image_tag)
+                        tag: $(DOCKER_IMAGE_TAG)
 
           - deployment: ${{ stage.deployment_infra }}
             dependsOn:
@@ -215,6 +233,12 @@ stages:
                     - template: templates/setup.yml
                       parameters:
                         TaskctlVersion: ${{ variables.TaskctlVersion }}
+
+                    - task: Bash@3
+                      displayName: Image pull
+                      inputs:
+                        targetType: inline
+                        script: taskctl image-pull
 
                     # Create a tfvars file for the values
                     # This is so that variables can be set and reused as required
@@ -244,7 +268,7 @@ stages:
                         ##### DNS & Public IP (All need to exist and should have been created prior (stacks-ancillary-resources & stacks-infrastructure-aks) EXCEPT the A Record name!)
                         TF_VAR_dns_zone: $(dns_zone)
                         TF_VAR_dns_zone_rg: $(dns_zone_rg)
-                        TF_VAR_dns_a_record_name: $(dns_a_record_name)
+                        TF_VAR_dns_a_record_name: ${{ stage.environment_shortname }}-$(dns_a_record_name)
 
                         TF_VAR_app_gateway_frontend_ip_name: $(app_gateway_frontend_ip_name)
                         TF_VAR_app_gateway_frontend_ip_rg: $(app_gateway_frontend_ip_rg)
@@ -309,16 +333,23 @@ stages:
                           targetType: inline
                           script: |
                             taskctl infra:init
+                            taskctl app:deploy_secrets
+                            taskctl deploy:templater
                             taskctl app:deploy
                         env:
                           TF_FILE_LOCATION: /app/deploy/azure/terraform
                           TF_VAR_name_environment: ${{ stage.environment_shortname }}
                           TF_BACKEND_INIT: "key=$(tf_state_key),container_name=$(tf_state_container),storage_account_name=$(tf_state_storage),resource_group_name=$(tf_state_rg)"
-                          provider: $(provider) # could be CLOUD_PLATFORM
-                          target: $(aks_cluster)
-                          identifier: $(aks_resource_group)
+                          CLOUD_PROVIDER: $(provider)
+                          K8S_CLUSTER_TARGET: $(aks_cluster)
+                          K8S_CLUSTER_IDENTIFIER: $(aks_resource_group)
                           add_redis_key: $(create_redis)
-                          namespace: $(namespace)
+                          NAMESPACE: $(namespace)
+                          DOCKER_REGISTRY: $(registry_fqdn)
+                          DOCKER_IMAGE_NAME: $(image_name)
+                          ENV_NAME: ${{ stage.environment_shortname }}
+                          DOMAIN: $(dns_a_record_name)
+                          DNS_BASE_DOMAIN: $(dns_zone)
 
   - stage: Release
     dependsOn:
@@ -340,6 +371,12 @@ stages:
           - template: templates/setup.yml
             parameters:
               TaskctlVersion: ${{ variables.TaskctlVersion }}
+
+          - task: Bash@3
+            displayName: Image pull
+            inputs:
+              targetType: inline
+              script: taskctl image-pull
 
           - task: Bash@3
             displayName: Publish Release
