@@ -1,13 +1,13 @@
 [CmdletBinding()]
 param (
   [string]
-  $target = $env:target,
+  $target = $env:K8S_CLUSTER_TARGET,
 
   [string]
-  $identifier = $env:identifier,
+  $identifier = $env:K8S_CLUSTER_IDENTIFIER,
 
   [string]
-  $provider = $env:provider,
+  $provider = $env:CLOUD_PROVIDER,
 
   [string]
   $path,
@@ -28,5 +28,5 @@ if ($VerboseOutput) {
 $originalDirectory = $PWD
 Set-Location -Path $path
 Write-Verbose "Adding K8s manifests!"
-Invoke-Kubectl -apply -arguments $manifestsToAdd -provider $env:provider -target $env:target -identifier $env:identifier
+Invoke-Kubectl -apply -arguments $manifestsToAdd -provider $provider -target $target -identifier $identifier
 Set-Location -Path $originalDirectory
