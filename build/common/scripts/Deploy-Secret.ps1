@@ -13,13 +13,13 @@ param (
   $redis_primary_access_key = $env:TFOUT_redis_primary_access_key,
 
   [string]
-  $target = $env:target,
+  $target = $env:K8S_CLUSTER_TARGET,
 
   [string]
-  $identifier = $env:identifier,
+  $identifier = $env:K8S_CLUSTER_IDENTIFIER,
 
   [string]
-  $provider = $env:provider,
+  $provider = $env:CLOUD_PROVIDER,
 
   [string]
   $secretName = "nx-secret",
@@ -31,7 +31,7 @@ param (
   $outputFile = "secrets.yaml",
 
   [string]
-  $namespace = $env:namespace,
+  $namespace = $env:NAMESPACE,
 
   [switch]
   $VerboseOutput

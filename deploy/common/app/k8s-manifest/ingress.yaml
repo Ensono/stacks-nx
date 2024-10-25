@@ -2,13 +2,13 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: nx-app-ingress
-  namespace: nx
+  namespace: ${namespace}
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: nginx
   rules:
-  - host: nx.nonprod.stacks.ensono.com  # Replace with your domain or use a local host
+  - host: ${host}
     http:
       paths:
       - path: /
@@ -20,4 +20,4 @@ spec:
               number: 80
   tls:
     - hosts:
-        - nonprod.stacks.ensono.com
+        - ${host}

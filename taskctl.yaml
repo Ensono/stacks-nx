@@ -55,6 +55,11 @@ pipelines:
     - task: app:deploy
       depends_on: app:build
 
+  deploy:
+    - task: deploy:templater
+    - task: app:deploy
+      depends_on: deploy:templater
+
   docs:
     - task: build:number
     - task: _docs

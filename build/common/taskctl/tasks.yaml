@@ -1,4 +1,32 @@
 tasks:
+  ######
+  # These `image-pull*` tasks are dummy tasks used for pulling
+  # images in the Pipeline to help de-clutter the build logs:
+  # e.g.:
+  # - run: taskctl image-pull
+
+  # - run: taskctl lint
+  #   env:
+  #     TF_FILE_LOCATION: deploy/azure/terraform
+
+  # - run: taskctl image-pull-infratests
+  image-pull:
+    context: powershell
+    command: ""
+
+  image-pull-infratests:
+    context: infratests
+    command: ""
+
+  image-pull-powershell-python:
+    context: powershell-python
+    command: ""
+
+  image-pull-docsenv:
+    context: docsenv
+    command: ""
+  ######
+
   build:number:
     context: powershell
     description: Update the build number
@@ -116,6 +144,20 @@ tasks:
     command:
       - Build-DockerImage -provider $env:provider -name $env:image_name -registry $env:registry_name -tag $env:tag -group $env:registry_resource_group -buildargs $env:build_args -push
 
+  deploy:templater:
+    context: powershell
+    description: Render deployment templates
+    command:
+      - Invoke-Templater -Path build/deployment_list.ps1
+
+  app:deploy_secrets:
+    context: powershell
+    description: Deploy the secrets to AKV
+    command:
+      - |
+        ./build/common/scripts/Prepare-TerraformOutputs.ps1 -VerboseOutput
+        ./build/common/scripts/Deploy-Secret.ps1 -VerboseOutput
+
   app:deploy:
     context: powershell
     description: Deploy the application to AKS
@@ -123,8 +165,6 @@ tasks:
       - |
         Import-Module Az.Aks # This is loaded here as when it is imported in lower down modules you end up with conflicts with assembly tasks within Azure DevOps Backend!
         ./build/common/scripts/Deploy-Manifests.ps1 -path "./deploy/common/app/k8s-manifest" -manifestsToAdd @("namespace.yaml") -VerboseOutput # This is performed separately so we can add the secret.yaml first so deployment.yaml does not break when referencing it.
-        ./build/common/scripts/Prepare-TerraformOutputs.ps1 -VerboseOutput
-        ./build/common/scripts/Deploy-Secret.ps1 -VerboseOutput
         ./build/common/scripts/Deploy-Manifests.ps1 -path "./deploy/common/app/k8s-manifest" -manifestsToAdd @("deployment.yaml", "service.yaml", "ingress.yaml") -VerboseOutput
 
 
