@@ -13,6 +13,7 @@ const argOptions = {
 
 const pipelineMap = {
   azdo: "azDevOps",
+  gha: "github",
 };
 
 const { values } = parseArgs({
