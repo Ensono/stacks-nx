@@ -13,7 +13,16 @@ const argOptions = {
 
 const pipelineMap = {
   azdo: "azDevOps",
+  gha: "github",
 };
+
+const moveFileMap = {
+  azdo: {},
+  gha: {
+    "build/github/aws/ci.env": ".github/workflows/ci.env",
+    "build/github/aws/ci.yml": ".github/workflows/ci.yml",
+  }
+}
 
 const { values } = parseArgs({
   options: argOptions,
@@ -36,7 +45,7 @@ function clone(...fragments) {
       force: true,
       recursive: true,
     });
-  } else if (key !== "common") {
+  } else if (!target.endsWith("/common")) {
     console.warn(`Unable to locate path "${target}"`);
   }
 }
@@ -46,7 +55,27 @@ function cloneDeploymentFolder(dir, key) {
   clone(dir, "common");
 }
 
+function moveFiles(pipeline) {
+  Object.entries(moveFileMap[pipeline]).forEach((entry) => {
+    [original, updated] = entry;
+    const target = path.join(targetDir, original);
+    const destination = path.join(targetDir, updated);
+
+    if (fs.existsSync(target)) {
+      if (!fs.existsSync(path.dirname(destination))) {
+        fs.mkdirSync(path.dirname(destination), {
+          recursive: true
+        });
+      }
+      fs.renameSync(target, destination);
+    } else {
+      console.warn(`Unable to locate path "${target}"`);
+    }
+  });
+}
+
 cloneDeploymentFolder("build", pipelineMap[pipeline]);
 cloneDeploymentFolder("deploy", platform);
 cloneDeploymentFolder("docs", pipelineMap[pipeline]);
 clone("taskctl.yaml");
+moveFiles(pipeline);
