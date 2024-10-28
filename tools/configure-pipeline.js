@@ -16,6 +16,14 @@ const pipelineMap = {
   gha: "github",
 };
 
+const moveFileMap = {
+  azdo: {},
+  gha: {
+    "build/github/aws/ci.env": ".github/workflows/ci.env",
+    "build/github/aws/ci.yml": ".github/workflows/ci.yml",
+  }
+}
+
 const { values } = parseArgs({
   options: argOptions,
 });
@@ -47,7 +55,26 @@ function cloneDeploymentFolder(dir, key) {
   clone(dir, "common");
 }
 
+function moveFiles(pipeline) {
+  Object.keys(moveFileMap[pipeline]).forEach((source) => {
+    const target = path.join(targetDir, source);
+    const destination = path.join(targetDir, moveFileMap[pipeline][source]);
+
+    if (fs.existsSync(target)) {
+      if (!fs.existsSync(path.dirname(destination))) {
+        fs.mkdirSync(path.dirname(destination), {
+          recursive: true
+        });
+      }
+      fs.renameSync(target, destination);
+    } else {
+      console.warn(`Unable to locate path "${target}"`);
+    }
+  });
+}
+
 cloneDeploymentFolder("build", pipelineMap[pipeline]);
 cloneDeploymentFolder("deploy", platform);
 cloneDeploymentFolder("docs", pipelineMap[pipeline]);
 clone("taskctl.yaml");
+moveFiles(pipeline);
