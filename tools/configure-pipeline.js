@@ -56,9 +56,10 @@ function cloneDeploymentFolder(dir, key) {
 }
 
 function moveFiles(pipeline) {
-  Object.keys(moveFileMap[pipeline]).forEach((source) => {
-    const target = path.join(targetDir, source);
-    const destination = path.join(targetDir, moveFileMap[pipeline][source]);
+  Object.entries(moveFileMap[pipeline]).forEach((entry) => {
+    [original, updated] = entry;
+    const target = path.join(targetDir, original);
+    const destination = path.join(targetDir, updated);
 
     if (fs.existsSync(target)) {
       if (!fs.existsSync(path.dirname(destination))) {
