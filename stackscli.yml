@@ -18,6 +18,14 @@ pipeline:
     templates:
       - name: variable
         path: build/azDevOps/azure/pipeline-vars.yml
+  # Pipeline files for GHA
+  - type: gha
+    files:
+      - name: variable
+        path: .github/workflows/ci.env
+    templates:
+      - name: variable
+        path: .github/workflows/ci.env
 
 setup:
   operations:
