@@ -37,7 +37,7 @@ function clone(...fragments) {
       force: true,
       recursive: true,
     });
-  } else if (key !== "common") {
+  } else if (!target.endsWith("/common")) {
     console.warn(`Unable to locate path "${target}"`);
   }
 }
