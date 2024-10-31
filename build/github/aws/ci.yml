@@ -30,7 +30,9 @@ jobs:
 
       - uses: ./build/github/templates/install-taskctl
 
-      - run: taskctl image-pull
+      - run: |
+          taskctl image-pull
+          taskctl image-pull-docsenv
 
       - run: taskctl lint
 
