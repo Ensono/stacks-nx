@@ -134,6 +134,8 @@ stages:
                 inputs:
                   targetType: inline
                   script: taskctl docs
+                env:
+                  DOCS_LOCATION: docs/azDevOps/azure
 
           # Upload the documentation as a build artifact
           - ${{ if eq(parameters.run_docs, true) }}:
