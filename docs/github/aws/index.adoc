@@ -1,0 +1,34 @@
+:source-highlighter: rouge
+:pdf-theme: docs/styles/ensono_digital_theme.yml
+:pdf-fontsdir: docs/styles/fonts;GEM_FONTS_DIR
+:table-stripes: even
+:listing-caption: Listing
+:icons: font
+:image_path: images
+:toc:
+
+:company: Ensono
+
+= Ensono Stacks - Stacks NX
+
+include::_index.adoc[]
+
+include::introduction.adoc[]
+
+include::infrastructure.adoc[]
+
+include::app_build.adoc[]
+
+include::app_deploy.adoc[]
+
+<<<
+
+include::getting_started.adoc[]
+
+<<<
+
+include::pipeline.adoc[]
+
+<<<
+
+include::glossary.adoc[]

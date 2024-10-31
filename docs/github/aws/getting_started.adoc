@@ -1,0 +1,35 @@
+---
+id: NX_getting_started
+title: Getting Started
+description: Details about getting started with this project.
+weight: 40
+---
+
+== Getting Started
+
+One of the things with the Ensono Digital Independent Runner (EDIR) is that it is designed to make things easier for people to run things locally that will also be run by the CI/CD platform. That is all well and good, but not if it has not been used before. This section provides a quick overview of how to start off with the repo from scratch.
+
+=== Prerequisites
+
+Please ensure that the following prerequisites are satisfied:
+
+* Docker Engine
+** This can be Docker, Rancher Desktop or Podman
+* Taskctl (https://github.com/ensono/taskctl/releases)
+
+NOTE: Taskctl has been forked to add some new functionality to the tool that this repository uses.
+
+=== Running the Pipelines
+
+Now that the environment has been configured the pipelines can be run.
+
+[cols="1,4",options=header,stripes=even]
+|===
+| # | Command
+| 1 | `taskctl lint`
+| 2 | `taskctl app`
+| 3 | `taskctl tests`
+| 4 | `taskctl docs`
+|===
+
+These pipelines can be run in any order based on the task that needs to be accomplished. In addition to these any of the tasks, as described in <<Pipeline>> can be executed.
