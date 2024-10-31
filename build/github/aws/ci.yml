@@ -34,6 +34,15 @@ jobs:
 
       - run: taskctl lint
 
+      - run: taskctl docs
+        env:
+          DOCS_LOCATION: docs/github/aws
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: docs
+          path: outputs/docs
+
   BuildDev:
     if: github.ref != 'refs/heads/main'
     needs: Setup
