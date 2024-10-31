@@ -47,9 +47,17 @@ $acronyms = @{
         expansion = "Azure DevOps"
         description = "Microsoft based Build system"
     }
+    "GHA" = @{
+        expansion = "GitHub Actions"
+        description = "GitHub based Build system"
+    }
     "AKS" = @{
         expansion = "Azure Kubernetes Service"
         description = "Microsoft managed Kubernetes control plane"
+    }
+    "EKS" = @{
+        expansion = "Elastic Kubernetes Service"
+        description = "Amazon managed Kubernetes control plane"
     }
     "RBAC" = @{
         expansion = "Role Based Access Control"

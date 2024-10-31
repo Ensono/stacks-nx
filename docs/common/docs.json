@@ -2,7 +2,7 @@
     "title": "Stacks NX Plugins",
     "output": "{{ basepath }}/outputs/docs/{{ format }}",
     "trunkBranch": "main",
-    "path": "{{ basepath }}/docs/azDevOps/azure/index.adoc",
+    "path": "{{ basepath }}/{{ DOCS_LOCATION }}/index.adoc",
     "libs": [
         "asciidoctor-diagram"
     ],

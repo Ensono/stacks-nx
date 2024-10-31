@@ -1,0 +1,12 @@
+---
+id: stacks_nx
+title: Stacks nx
+description: Build pipeline for Terraform to deploy container application into AWS.
+tags:
+  - nx
+  - aws
+categories:
+  - App Image Build/Deploy
+---
+
+The Stacks NX project contains all build pipelines (for Independent Runner and GitHub Actions) to deploy the templates.

@@ -30,9 +30,20 @@ jobs:
 
       - uses: ./build/github/templates/install-taskctl
 
-      - run: taskctl image-pull
+      - run: |
+          taskctl image-pull
+          taskctl image-pull-docsenv
 
       - run: taskctl lint
+
+      - run: taskctl docs
+        env:
+          DOCS_LOCATION: docs/github/aws
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: docs
+          path: outputs/docs
 
   BuildDev:
     if: github.ref != 'refs/heads/main'

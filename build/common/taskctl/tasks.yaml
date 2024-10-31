@@ -152,7 +152,7 @@ tasks:
 
   app:deploy_secrets:
     context: powershell
-    description: Deploy the secrets to AKV
+    description: Deploy Kubernetes secrets
     command:
       - |
         ./build/common/scripts/Prepare-TerraformOutputs.ps1 -VerboseOutput
@@ -160,7 +160,7 @@ tasks:
 
   app:deploy:
     context: powershell
-    description: Deploy the application to AKS
+    description: Deploy the application to Kubernetes
     command:
       - |
         Import-Module Az.Aks # This is loaded here as when it is imported in lower down modules you end up with conflicts with assembly tasks within Azure DevOps Backend!
@@ -207,7 +207,7 @@ tasks:
     description: Build Docs for Stacks-NX
     context: docsenv
     command: |
-      /app/build/common/scripts/New-Glossary.ps1 -docpath /app/docs/azDevOps/azure -path /app/tmp/glossary.adoc
+      /app/build/common/scripts/New-Glossary.ps1 -docpath /app/$env:DOCS_LOCATION -path /app/tmp/glossary.adoc
       Invoke-AsciiDoc -PDF -basepath /app -config /app/docs/common/docs.json -debug
 
   _release:
